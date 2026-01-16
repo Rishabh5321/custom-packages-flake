@@ -46,10 +46,10 @@ Add this flake to your `flake.nix` inputs:
   outputs = { self, nixpkgs, custom-packages, ... }: {
     nixosConfigurations.my-machine = nixpkgs.lib.nixosSystem {
       modules = [
-        ({ pkgs, ... }: {
+        ({ inputs, pkgs, ... }: {
           environment.systemPackages = [
-            custom-packages.packages.${pkgs.system}.thorium
-            custom-packages.packages.${pkgs.system}.better-control
+            inputs.custom-packages.packages.${pkgs.stdenv.hostPlatform.system}.fladder
+            inputs.custom-packages.packages.${pkgs.stdenv.hostPlatform.system}.better-control
           ];
         })
       ];
