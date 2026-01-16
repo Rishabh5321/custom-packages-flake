@@ -17,15 +17,28 @@ jobs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
     steps:
       - uses: actions/checkout@v4
-      - uses: cachix/install-nix-action@v27
+      - uses: cachix/install-nix-action@v31
         with:
           extra_nix_config: |
             access-tokens = github.com=${{ secrets.GITHUB_TOKEN }}
+            experimental-features = nix-command flakes
       - id: set-matrix
         run: |
+          set -e
           # Show flake outputs in JSON, extract package names, filter out non-packages
           # "override" and "overrideDerivation" are sometimes present in nixpkgs results
-          PACKAGES=$(nix flake show --json | jq -c '.packages."x86_64-linux" | keys | map(select(. != "override" and . != "overrideDerivation"))')
+          # If nix flake show fails, we want to catch it (set -e).
+          JSON=$(nix flake show --json)
+          echo "Flake show output:"
+          echo "$JSON"
+          
+          PACKAGES=$(echo "$JSON" | jq -c '.packages."x86_64-linux" | keys | map(select(. != "override" and . != "overrideDerivation"))')
+          
+          if [ -z "$PACKAGES" ] || [ "$PACKAGES" == "null" ]; then
+            echo "No packages found or failed to parse."
+            PACKAGES="[]"
+          fi
+          
           echo "matrix=$PACKAGES" >> $GITHUB_OUTPUT
 
   nix_check_build:
