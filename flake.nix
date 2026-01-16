@@ -16,5 +16,16 @@
       packages = forAllSystems ({ pkgs, ... }:
         import ./packages/default.nix { inherit pkgs; }
       );
+
+      nixosModules.seanime = { ... }: {
+        imports = [
+          ({ ... }: {
+            imports = [ ./packages/seanime/seanime-home.nix ];
+            config = {
+              _module.args.seanime = self.packages.x86_64-linux.seanime;
+            };
+          })
+        ];
+      };
     };
 }

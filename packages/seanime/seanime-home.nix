@@ -1,5 +1,4 @@
-# ./seanime-home.nix
-{ config, lib, pkgs, seanime, ... }:
+{ config, lib, pkgs, seanime ? pkgs.seanime, ... }:
 
 let
   cfg = config.modules.home.services.seanime;
