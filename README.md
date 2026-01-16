@@ -16,6 +16,7 @@ A Nix flake containing custom packages for NixOS and Linux.
 | `better-control` | Simple control panel for Linux based on GTK |
 | `ab-download-manager` | A Download Manager that speeds up your downloads |
 | `surge` | Open-source media server for anime and manga (TUI) |
+| `grayjay` | Desktop client for Grayjay to stream and download video content |
 | `zed-editor` | High-performance, multiplayer code editor (Source build) |
 | `zed-editor-bin` | High-performance, multiplayer code editor (Binary) |
 | `zed-editor-fhs` | Zed Editor (Source) wrapped in FHS environment |
