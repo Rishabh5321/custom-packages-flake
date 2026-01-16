@@ -5,6 +5,7 @@ rec {
   better-control = pkgs.callPackage ./better-control/default.nix { };
   fladder = pkgs.callPackage ./fladder/default.nix { };
   playtorrio = pkgs.callPackage ./playtorrio/default.nix { };
+  grayjay = pkgs.callPackage ./grayjay/default.nix { };
   seanime = pkgs.callPackage ./seanime/seanime-pkg.nix { };
   surge = pkgs.callPackage ./surge/default.nix { };
 
