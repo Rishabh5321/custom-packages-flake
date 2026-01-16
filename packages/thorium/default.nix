@@ -28,30 +28,30 @@ in
 {
   thorium-avx = mkThorium {
     pname = "thorium";
-    version = "130.0.6723.174";
+    version = "138.0.7204.300";
     variant = "AVX";
-    url = "https://github.com/Alex313031/thorium/releases/download/M130.0.6723.174/Thorium_Browser_130.0.6723.174_AVX.AppImage";
-    hash = "sha256-23Vq+MDoV1ePkcVVy5SHWX6QovFUKxDdsgteWfG/i1U="; # Replace with the actual hash
+    url = "https://github.com/Alex313031/thorium/releases/download/M138.0.7204.300/Thorium_Browser_138.0.7204.300_AVX.AppImage";
+    hash = "sha256-3FGMZKJnLJztZ2g6GGw2wvmrOMBfqHaJfaK6VvErhB0="; # Replace with the actual hash
   };
   thorium-avx2 = mkThorium {
     pname = "thorium";
-    version = "130.0.6723.174";
+    version = "138.0.7204.300";
     variant = "AVX2";
-    url = "https://github.com/Alex313031/thorium/releases/download/M130.0.6723.174/Thorium_Browser_130.0.6723.174_AVX2.AppImage";
-    hash = "sha256-Ej7OIdAjYRmaDlv56ANU5pscuwcBEBee6VPZA3FdxsQ=";
+    url = "https://github.com/Alex313031/thorium/releases/download/M138.0.7204.300/Thorium_Browser_138.0.7204.300_AVX2.AppImage";
+    hash = "sha256-vpAAoZv8Ayg1AN0Uo9Ou8fX22hdhJnxHM1W6XrpwMww=";
   };
   thorium-sse3 = mkThorium {
     pname = "thorium";
-    version = "130.0.6723.174";
+    version = "138.0.7204.300";
     variant = "SSE3";
-    url = "https://github.com/Alex313031/thorium/releases/download/M130.0.6723.174/Thorium_Browser_130.0.6723.174_SSE3.AppImage";
-    hash = "sha256-6qHCijDhAk7gXJ2TM774gVgW82AhexFlXFG1C0kfFoc=";
+    url = "https://github.com/Alex313031/thorium/releases/download/M138.0.7204.300/Thorium_Browser_138.0.7204.300_SSE3.AppImage";
+    hash = "sha256-2aOHkc5SDVXgz7DHm1HaZa/7f4e3dyrPEs3/hQQOpCg=";
   };
   thorium-sse4 = mkThorium {
     pname = "thorium";
-    version = "130.0.6723.174";
+    version = "138.0.7204.300";
     variant = "SSE4";
-    url = "https://github.com/Alex313031/thorium/releases/download/M130.0.6723.174/Thorium_Browser_130.0.6723.174_SSE4.AppImage";
-    hash = "sha256-v5GGcu/bLJMc2f4Uckcn+ArgnnLL/jrT+01iw/105iY=";
+    url = "https://github.com/Alex313031/thorium/releases/download/M138.0.7204.300/Thorium_Browser_138.0.7204.300_SSE4.AppImage";
+    hash = "sha256-cr1yyiPYIh0JxLMlf0ZCt+Do0TYT6KvgYtM0ffknxVE=";
   };
 }
