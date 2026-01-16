@@ -6,4 +6,4 @@
   fladder = pkgs.callPackage ./fladder/default.nix { };
   playtorrio = pkgs.callPackage ./playtorrio/default.nix { };
   seanime = pkgs.callPackage ./seanime/seanime-pkg.nix { };
-} // (pkgs.callPackage ./thorium/default.nix { })
+} // (import ./thorium/default.nix { inherit pkgs; })
