@@ -37,7 +37,28 @@ sed -i -E "s@(version\s*=\s*\")[^\"]+@\1${LATEST_VERSION}@" packages/playtorrio/
 DOWNLOAD_URL="https://github.com/ayman708-UX/PlayTorrio/releases/download/v${LATEST_VERSION}/PlayTorrio.AppImage"
 echo "Download URL: $DOWNLOAD_URL"
 
-NEW_HASH=$(nix hash file --url "$DOWNLOAD_URL")
+NEW_HASH=$(nix-prefetch-url --type sha256 "$DOWNLOAD_URL")
+
+if [ -z "$NEW_HASH" ]; then
+    echo "Failed to calculate hash."
+    exit 1
+fi
+
+# nix-prefetch-url returns raw sha256, but nix hash file often implies SRI or base32?
+# Actually 'nix-prefetch-url' usually returns base32.
+# Let's verify what the previous `hash = ...` expected.
+# In the original file: sha256 = "sha256-..." (SRI or base64)
+# `nix-prefetch-url` returns base32 by default.
+# We can convert it using `nix hash to-sri --type sha256 $NEW_HASH` if needed.
+# But often sha256 = "..." accepts the base32 too usually?
+# Wait, `nix hash file` output is usually SRI.
+# Let's use `nix store prefetch-file --json` to get SRI if possible, or convert.
+# Or safer: use curl and nix hash file like the user had.
+
+TEMP_FILE=$(mktemp)
+curl -sL "$DOWNLOAD_URL" -o "$TEMP_FILE"
+NEW_HASH=$(nix hash file "$TEMP_FILE")
+rm -f "$TEMP_FILE"
 
 if [ -z "$NEW_HASH" ]; then
     echo "Failed to calculate hash."

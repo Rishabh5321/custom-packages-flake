@@ -58,7 +58,10 @@ for VARIANT in "${VARIANTS[@]}"; do
     echo "Processing $VARIANT..."
     DOWNLOAD_URL="https://github.com/Alex313031/thorium/releases/download/${LATEST_TAG}/Thorium_Browser_${LATEST_VERSION}_${VARIANT}.AppImage"
     
-    NEW_HASH=$(nix hash file --url "$DOWNLOAD_URL")
+    TEMP_FILE=$(mktemp)
+    curl -sL "$DOWNLOAD_URL" -o "$TEMP_FILE"
+    NEW_HASH=$(nix hash file "$TEMP_FILE")
+    rm -f "$TEMP_FILE"
     
     if [ -z "$NEW_HASH" ]; then
         echo "Failed to calculate hash for $VARIANT"

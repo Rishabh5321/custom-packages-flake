@@ -37,7 +37,10 @@ sed -i -E "s@(version\s*=\s*\")[^\"]+@\1${LATEST_VERSION}@" packages/fladder/def
 DOWNLOAD_URL="https://github.com/DonutWare/Fladder/releases/download/v${LATEST_VERSION}/Fladder-Linux-${LATEST_VERSION}.AppImage"
 echo "Download URL: $DOWNLOAD_URL"
 
-NEW_HASH=$(nix hash file --url "$DOWNLOAD_URL")
+TEMP_FILE=$(mktemp)
+curl -sL "$DOWNLOAD_URL" -o "$TEMP_FILE"
+NEW_HASH=$(nix hash file "$TEMP_FILE")
+rm -f "$TEMP_FILE"
 
 if [ -z "$NEW_HASH" ]; then
     echo "Failed to calculate hash."

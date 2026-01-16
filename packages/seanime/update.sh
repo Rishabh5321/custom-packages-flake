@@ -37,7 +37,10 @@ sed -i -E "s@(version\s*=\s*\")[^\"]+@\1${LATEST_VERSION}@" packages/seanime/sea
 DOWNLOAD_URL="https://github.com/5rahim/seanime/releases/download/v${LATEST_VERSION}/seanime-${LATEST_VERSION}_Linux_x86_64.tar.gz"
 echo "Download URL: $DOWNLOAD_URL"
 
-NEW_HASH=$(nix hash file --url "$DOWNLOAD_URL")
+TEMP_FILE=$(mktemp)
+curl -sL "$DOWNLOAD_URL" -o "$TEMP_FILE"
+NEW_HASH=$(nix hash file "$TEMP_FILE")
+rm -f "$TEMP_FILE"
 
 if [ -z "$NEW_HASH" ]; then
     echo "Failed to calculate hash."

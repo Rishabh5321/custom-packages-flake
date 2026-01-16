@@ -38,7 +38,10 @@ sed -i -E "s@(version\s*=\s*\")[^\"]+@\1${LATEST_VERSION}@" packages/ab-download
 DOWNLOAD_URL="https://github.com/amir1376/ab-download-manager/releases/download/v${LATEST_VERSION}/ABDownloadManager_${LATEST_VERSION}_linux_x64.tar.gz"
 echo "Download URL: $DOWNLOAD_URL"
 
-NEW_HASH=$(nix hash file --url "$DOWNLOAD_URL")
+TEMP_FILE=$(mktemp)
+curl -sL "$DOWNLOAD_URL" -o "$TEMP_FILE"
+NEW_HASH=$(nix hash file "$TEMP_FILE")
+rm -f "$TEMP_FILE"
 
 if [ -z "$NEW_HASH" ]; then
     echo "Failed to calculate hash."
