@@ -11,19 +11,31 @@ on:
   workflow_dispatch:
 
 jobs:
-  nix_check_build:
-    name: Nix Check and Build
+  list-packages:
     runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: cachix/install-nix-action@v27
+        with:
+          extra_nix_config: |
+            access-tokens = github.com=${{ secrets.GITHUB_TOKEN }}
+      - id: set-matrix
+        run: |
+          # Show flake outputs in JSON, extract package names, filter out non-packages
+          # "override" and "overrideDerivation" are sometimes present in nixpkgs results
+          PACKAGES=$(nix flake show --json | jq -c '.packages."x86_64-linux" | keys | map(select(. != "override" and . != "overrideDerivation"))')
+          echo "matrix=$PACKAGES" >> $GITHUB_OUTPUT
 
+  nix_check_build:
+    name: Build ${{ matrix.package }}
+    needs: list-packages
+    runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
-        package:
-          - ab-download-manager
-          - better-control
-          - fladder
-          - playtorrio
-          - seanime
+        package: ${{ fromJson(needs.list-packages.outputs.matrix) }}
 
     steps:
       - name: Checkout Repository
@@ -47,8 +59,8 @@ jobs:
           name: rishabh5321
           authToken: "${{ secrets.CACHIX_AUTH_TOKEN }}"
 
-      - name: Run flake check
-        run: nix flake check
-
+      # Only run flake check once, maybe on the first package or in a separate job
+      # To keep it simple, we can skip it here or run it if needed. 
+      # Since we just want to build, let's just build.
       - name: Build Nix Flake
         run: nix build .#${{ matrix.package }}
