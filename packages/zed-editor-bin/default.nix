@@ -53,7 +53,7 @@ let
     };
   };
 
-  system = stdenv.hostPlatform.system; # or simply `stdenv.system`
+  inherit (stdenv.hostPlatform) system;# or simply `stdenv.system`
   info =
     if lib.hasAttr system assets
     then assets.${system}
@@ -133,8 +133,8 @@ stdenv.mkDerivation (finalAttrs: {
   buildInputs = nixDeps;
 
   src = fetchurl {
-    url = info.url;
-    sha256 = info.sha256;
+    inherit (info) url;
+    inherit (info) sha256;
   };
 
   phases = [ "unpackPhase" "installPhase" ];
