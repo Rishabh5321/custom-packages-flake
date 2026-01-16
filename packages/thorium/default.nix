@@ -14,7 +14,7 @@ let
         substituteInPlace $out/share/applications/thorium-browser.desktop \
           --replace 'Exec=AppRun --no-sandbox %U' 'Exec=${pname} %U'
       '';
-      
+
       meta = with pkgs.lib; {
         description = "Thorium Browser (${variant}) - A fast and secure web browser";
         homepage = "https://thorium.rocks";
