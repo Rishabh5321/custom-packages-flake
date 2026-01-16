@@ -8,7 +8,7 @@ buildGoModule rec {
   version = "0.1.2";
 
   src = fetchFromGitHub {
-    owner = "junaid2005p";
+    owner = "surge-downloader";
     repo = "surge";
     rev = "v${version}";
     hash = "sha256-0GOQKdJqD+sXyUDaO3+tpd+JmHzcqH7zUGVDPhGGJCA=";
@@ -24,7 +24,7 @@ buildGoModule rec {
 
   meta = with lib; {
     description = "Surge - Open-source media server for anime and manga";
-    homepage = "https://github.com/junaid2005p/surge";
+    homepage = "https://github.com/surge-downloader/surge";
     license = licenses.mit; # Assuming MIT, need to check
     maintainers = with maintainers; [ ];
     mainProgram = "surge";
