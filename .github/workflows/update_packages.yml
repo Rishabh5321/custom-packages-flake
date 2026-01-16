@@ -36,7 +36,6 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
-      max-parallel: 1 # Run sequentially to avoid git lock issues if pushing to same branch (or use separate branches)
       matrix:
         package: ${{ fromJson(needs.list-packages.outputs.matrix) }}
     
@@ -61,8 +60,6 @@ jobs:
           echo "Checking update script for $PACKAGE..."
           
           # Check if updateScript is defined
-          # We use --json to get structured output.
-          # If it fails, it means no updateScript.
           SCRIPT_JSON=$(nix eval --json .#${PACKAGE}.passthru.updateScript 2>/dev/null || echo "null")
           
           if [ "$SCRIPT_JSON" == "null" ]; then
@@ -70,48 +67,14 @@ jobs:
             exit 0
           fi
           
-          # Check if it's a string (path) or list
           TYPE=$(echo "$SCRIPT_JSON" | jq -r 'type')
           
           if [ "$TYPE" == "string" ]; then
             echo "Found custom update script (path): $SCRIPT_JSON"
-            # It's a path in the nix store. We need to map it to the checkout if possible, 
-            # OR just run it. If it expects to be in the repo root, we should run it from there.
-            # Nix paths are absolute. We can just execute it.
-            # BUT, my scripts use $(dirname $0) dependencies. 
-            # If nix copies the script to store, relative paths might break if they assume the *source* tree structure.
-            # My scripts assume they are in the source tree (./seanime-pkg.nix).
-            # If I run the store path, it will try to modify the store file (read-only error).
-            # So I must find the script in the local checkout.
-            
-            # Heuristic: The script is likely at packages/<pkg>/update.sh or similar.
-            # Since I know my structure, I can just try to run it from source if I can find it.
-            # OR, I can create a temporary "run script" that handles this.
-            
-            # Better approach for FUTURE flexibility:
-            # Use `nix-update` for standard things.
-            # For custom things, my scripts should be robust. 
-            # Let's adjust my scripts to accept the file path as ARGUMENT? 
-            # No, standard is `updateScript`.
-            
-            # Re-eval: The user wants "automatic management".
-            # If I use `nix-update` (the tool), it can run the update script!
-            # `nix-update --flake .#pkg` tries to update version.
-            # `nix-update --run .#pkg` runs the update script? No.
-            
-            # Let's simple-mindedly look for the local script matching the store path filename?
-            # Or just assume packages/$PACKAGE/update.sh exists if I created it?
-            # Thorium: packages/thorium/update.sh
-            # Seanime: packages/seanime/update.sh
-            # Playtorrio: packages/playtorrio/update.sh
-            
-            # For Thorium variants, they all use same script.
-            
             SCRIPT_NAME=$(echo "$SCRIPT_JSON" | tr -d '"') 
-            # SCRIPT_NAME is /nix/store/...-update.sh
             BASENAME=$(basename "$SCRIPT_NAME")
             
-            # Find it in packages/
+            # Find it in packages using heuristic
             LOCAL_SCRIPT=$(find packages -name "$BASENAME" | head -n 1)
             
             if [ -n "$LOCAL_SCRIPT" ]; then
@@ -125,11 +88,22 @@ jobs:
             
           elif [ "$TYPE" == "array" ]; then
              echo "Found standard updateScript list."
-             # It's like [ "nix-update" "--flake" ... ]
-             # We can execute it.
-             # jq to convert to space separated args?
-             CMD=$(echo "$SCRIPT_JSON" | jq -r 'join(" ")')
-             eval "$CMD"
+             # Extract the first element (command) and the rest (args)
+             CMD=$(echo "$SCRIPT_JSON" | jq -r '.[0]')
+             ARGS=$(echo "$SCRIPT_JSON" | jq -r '.[1:] | join(" ")')
+             
+             echo "Original Command: $CMD"
+             echo "Args: $ARGS"
+             
+             # If command contains "nix-update", swap it for the one in PATH
+             if [[ "$CMD" == *"nix-update"* ]]; then
+                echo "Detected nix-update store path. Using system nix-update."
+                CMD="nix-update"
+             fi
+             
+             # Execute
+             echo "Running: $CMD $ARGS"
+             eval "$CMD $ARGS"
           else
              echo "Unknown updateScript type: $TYPE"
              exit 1
