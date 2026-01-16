@@ -14,8 +14,9 @@ jobs:
     outputs:
       flake-inputs: ${{ steps.get-flake-inputs.outputs.flake-inputs }}
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
         with:
+          persist-credentials: false
           sparse-checkout: flake.lock
       - id: get-flake-inputs
         run: |
@@ -36,9 +37,10 @@ jobs:
       fail-fast: false
       matrix: ${{ fromJson(needs.get-flake-inputs.outputs.flake-inputs) }}
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
         with:
           lfs: false
+          persist-credentials: false
 
       # Generate a GitHub App token for creating the PR
       - name: Generate App Token

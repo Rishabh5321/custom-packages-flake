@@ -11,7 +11,10 @@ jobs:
     outputs:
       packages: ${{ steps.set-matrix.outputs.packages }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
+        with:
+          lfs: false
+          persist-credentials: false
       - id: set-matrix
         run: |
           # Find directories in packages/ that contain update.sh
@@ -28,7 +31,10 @@ jobs:
       matrix:
         package: ${{ fromJson(needs.discover.outputs.packages) }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
+        with:
+          lfs: false
+          persist-credentials: false
 
       - name: Generate App Token
         id: generate_token
@@ -67,7 +73,7 @@ jobs:
       - name: Create Pull Request
         id: create_pr
         if: env.UPDATE_DETECTED == 'true'
-        uses: peter-evans/create-pull-request@v7
+        uses: peter-evans/create-pull-request@v8
         with:
           token: ${{ steps.generate_token.outputs.token }}
           author: "flakebuilderapp[bot] <flakebuilderapp[bot]@users.noreply.github.com>"
