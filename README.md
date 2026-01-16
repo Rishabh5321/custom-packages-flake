@@ -1,33 +1,75 @@
-## This is just a template repo for creating a flake with all my workflows already setup
+# Custom Packages Flake
 
+A Nix flake containing custom packages for NixOS and Linux.
 
-#### Secrets Needed to setup workflows
+## Packages
 
+| Package | Description |
+|---------|-------------|
+| `thorium-avx` | Thorium Browser (AVX optimized) |
+| `thorium-avx2` | Thorium Browser (AVX2 optimized) |
+| `thorium-sse3` | Thorium Browser (SSE3 optimized) |
+| `thorium-sse4` | Thorium Browser (SSE4 optimized) |
+| `seanime` | Open-source media server for anime and manga |
+| `fladder` | A Simple Jellyfin Frontend built on top of Flutter |
+| `playtorrio` | Stream torrents directly |
+| `better-control` | Simple control panel for Linux based on GTK |
+| `ab-download-manager` | A Download Manager that speeds up your downloads |
 
-#### `flake_check`: `flake_check.yml`
+## Usage
 
-- `CACHIX_AUTH_TOKEN`: For creating and setting up cachix.
+### Run directly
+You can run any package directly without installing:
 
-#### `flake_deadnix`: `flake_deadnix.yml`
+```bash
+nix run github:Rishabh5321/custom-packages-flake#thorium
+nix run github:Rishabh5321/custom-packages-flake#seanime
+```
 
-- #### No Secrets Needed
+### Install in Profile
+To install a package into your user profile:
 
-#### `flake_format`: `flake_format.yml`
+```bash
+nix profile install github:Rishabh5321/custom-packages-flake#fladder
+```
 
-- `REPO_ACCESS_TOKEN`: Github Token needed for creating pull request.
+### NixOS Configuration
+Add this flake to your `flake.nix` inputs:
 
-#### `update-flakes`: `update-flakes.yaml`
+```nix
+{
+  inputs = {
+    nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
+    custom-packages.url = "github:Rishabh5321/custom-packages-flake";
+  };
 
-For creating pull request with flakebuilderapp [bot].
+  outputs = { self, nixpkgs, custom-packages, ... }: {
+    nixosConfigurations.my-machine = nixpkgs.lib.nixosSystem {
+      modules = [
+        ({ pkgs, ... }: {
+          environment.systemPackages = [
+            custom-packages.packages.${pkgs.system}.thorium
+            custom-packages.packages.${pkgs.system}.better-control
+          ];
+        })
+      ];
+    };
+  };
+}
+```
 
-- `APP_ID`: Settings > Developer Settings > APP (EDIT)
+## Automated Updates
 
-- `APP_PRIVATE_KEY`: Private Key
+This repository features a fully automated update system. A GitHub Actions workflow runs daily to check for upstream updates.
 
-#### `Gitlab-Sync`: `sync-to-gitlab.yml`
+- **Workflow**: `.github/workflows/update-packages.yml`
+- **Mechanism**: The workflow executes custom `update.sh` scripts located in each package directory (e.g., `packages/thorium/update.sh`).
+- **Pull Requests**: When an update is detected, a Pull Request is automatically created and merged.
 
-- `GITLAB_URL`: Gitlab Repo URL
+### Secrets Required for Workflows
 
-- `USERNAME`: Username
+To enable the automation, the following secrets are configured:
 
-- `GITLAB_PAT`: Gitlab Secret Token
+- `APP_ID`: GitHub App ID for the bot.
+- `APP_PRIVATE_KEY`: Private Key for the GitHub App.
+- `CACHIX_AUTH_TOKEN`: For binary caching (optional).
