@@ -1,0 +1,213 @@
+# .github/workflows/update-better-control.yml
+name: Update better-control commit version
+
+permissions:
+  contents: write # Needed for `actions/checkout` and commiting changes
+  pull-requests: write # Needed for creating PRs and enabling automerge
+
+on:
+  schedule:
+    # Runs hourly (adjust as needed, e.g., '0 8 * * *' for daily at 8 AM UTC)
+    - cron: "0 */6 * * *"
+  workflow_dispatch: # Allows manual triggering
+
+jobs:
+  update-better-control:
+    runs-on: ubuntu-latest
+    # Prevent multiple runs for the same commit/event
+    concurrency:
+      group: ${{ github.workflow }}-${{ github.ref }}
+      cancel-in-progress: true
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          # Fetch all history for accurate version comparison and branch operations
+          fetch-depth: 0 # Keep this for accurate version comparison
+          persist-credentials: false
+
+      # Corrected Setup Environment (Nix & GH CLI) step
+      - name: Setup Nix
+        uses: cachix/install-nix-action@v31
+        with:
+          nix_path: nixpkgs=channel:nixos-unstable
+
+      - name: Install dependencies (using Nix) and Authenticate GH CLI
+        run: |
+          # Install necessary tools using nix profile for better isolation
+          nix profile install nixpkgs#gh nixpkgs#nix-prefetch-github nixpkgs#jq nixpkgs#gnused nixpkgs#gnugrep
+
+          # Add Nix binaries to PATH for subsequent steps (if not already handled by install-nix-action)
+          # The install-nix-action typically handles this, but it doesn't hurt to be explicit.
+          echo "$HOME/.nix-profile/bin" >> $GITHUB_PATH
+
+          # Authenticate gh CLI with GITHUB_TOKEN
+          # This ensures all subsequent 'gh' commands in this job are authenticated
+          echo "${{ secrets.GITHUB_TOKEN }}" | gh auth login --with-token
+
+          # Verify installations
+          gh --version
+          nix-prefetch-github --version
+          jq --version
+          sed --version || true # gnu sed might not have --version
+          grep --version || true # gnu grep might not have --version
+
+      - name: Get current and latest commit SHAs
+        id: versions
+        run: |
+          # Get current commit hash (rev) from package.nix
+          CURRENT_COMMIT_SHA=$(grep -oP 'version\s*=\s*"\K[^"]+' package.nix || echo "0000000000000000000000000000000000000000")
+          echo "Current commit SHA found in package.nix: $CURRENT_COMMIT_SHA"
+          echo "CURRENT_COMMIT_SHA=$CURRENT_COMMIT_SHA" >> $GITHUB_ENV
+
+          echo "Fetching latest commit SHA from 'main' branch..."
+          LATEST_COMMIT_SHA=$(gh api repos/better-ecosystem/better-control/commits/main --jq '.sha')
+
+          if [ -z "$LATEST_COMMIT_SHA" ] || [ "$LATEST_COMMIT_SHA" == "null" ]; then
+            echo "::error::Could not extract latest commit SHA from GitHub API response for 'main' branch."
+            exit 1
+          fi
+
+          echo "Latest commit SHA from 'main' branch: $LATEST_COMMIT_SHA"
+          echo "LATEST_COMMIT_SHA=$LATEST_COMMIT_SHA" >> $GITHUB_ENV
+
+          if [ "$CURRENT_COMMIT_SHA" = "$LATEST_COMMIT_SHA" ]; then
+            echo "better-control is up-to-date with 'main' branch ($CURRENT_COMMIT_SHA)."
+            echo "UPDATE_NEEDED=false" >> $GITHUB_ENV
+          else
+            echo "Update needed: $CURRENT_COMMIT_SHA -> $LATEST_COMMIT_SHA"
+            echo "UPDATE_NEEDED=true" >> $GITHUB_ENV
+          fi
+
+      - name: Compute Short SHAs
+        if: env.UPDATE_NEEDED == 'true'
+        env:
+          CURRENT_COMMIT_SHA: ${{ env.CURRENT_COMMIT_SHA }}
+          LATEST_COMMIT_SHA: ${{ env.LATEST_COMMIT_SHA }}
+        run: |
+          echo "CURRENT_COMMIT_SHORT_SHA=${CURRENT_COMMIT_SHA:0:7}" >> $GITHUB_ENV
+          echo "LATEST_COMMIT_SHORT_SHA=${LATEST_COMMIT_SHA:0:7}" >> $GITHUB_ENV
+
+      - name: Check for existing Pull Request
+        id: check_pr
+        if: env.UPDATE_NEEDED == 'true'
+        env:
+          BRANCH_NAME: "update-better-control-commit-${{ env.LATEST_COMMIT_SHA }}"
+        run: |
+          echo "Checking for existing open PR for branch: $BRANCH_NAME"
+          EXISTING_PR_URL=$(gh pr list --head "$BRANCH_NAME" --base main --state open --json url --jq '.[0].url')
+
+          if [ -n "$EXISTING_PR_URL" ]; then
+            echo "::warning::An open pull request already exists for branch $BRANCH_NAME: $EXISTING_PR_URL"
+            echo "Skipping update and PR creation steps."
+            echo "PR_EXISTS=true" >> $GITHUB_ENV
+          else
+            echo "No existing open PR found for branch $BRANCH_NAME."
+            echo "PR_EXISTS=false" >> $GITHUB_ENV
+          fi
+
+      - name: Update commit SHA and hash
+        if: env.UPDATE_NEEDED == 'true' && env.PR_EXISTS == 'false'
+        env:
+          LATEST_COMMIT_SHA: ${{ env.LATEST_COMMIT_SHA }}
+        run: |
+          echo "Updating package.nix to commit SHA (rev) $LATEST_COMMIT_SHA"
+
+          sed -i -E "s@(version\s*=\s*\")[^\"]+@\1${LATEST_COMMIT_SHA}@" package.nix
+          echo "Version (rev) updated in package.nix"
+
+          echo "Running: nix-prefetch-github better-ecosystem better-control --rev $LATEST_COMMIT_SHA"
+          PREFETCH_OUTPUT=$(nix-prefetch-github better-ecosystem better-control --rev "$LATEST_COMMIT_SHA" 2>&1)
+          echo "Prefetch output:"
+          echo "$PREFETCH_OUTPUT"
+
+          NEW_HASH=""
+          if echo "$PREFETCH_OUTPUT" | jq -e .hash > /dev/null 2>&1; then
+            NEW_HASH=$(echo "$PREFETCH_OUTPUT" | jq -r .hash)
+            echo "Extracted hash via jq: $NEW_HASH"
+          else
+            echo "::warning::nix-prefetch-github did not produce valid JSON output. Attempting legacy extraction."
+            LEGACY_HASH=$(echo "$PREFETCH_OUTPUT" | grep -oP 'sha256-[a-zA-Z0-9/+]+=*')
+            if [ -n "$LEGACY_HASH" ]; then
+              NEW_HASH=$(echo "$LEGACY_HASH" | head -n 1)
+              echo "Extracted legacy hash via grep: $NEW_HASH"
+            else
+              echo "::error::Failed to extract hash from prefetch output (JSON and Legacy methods failed)."
+              echo "Output was: $PREFETCH_OUTPUT"
+              exit 1
+            fi
+          fi
+
+          if [[ "$NEW_HASH" =~ ^sha256-[A-Za-z0-9+/]+={0,2}$ ]]; then
+            echo "Validated hash format: $NEW_HASH"
+          else
+            echo "::error::Extracted value '$NEW_HASH' does not look like a valid sha256 hash."
+            exit 1
+          fi
+
+          sed -i -E "s|(hash\s*=\s*\")[^\"]+(\";)|\1${NEW_HASH}\2|" package.nix
+
+          if grep -q "hash = \"$NEW_HASH\";" package.nix; then
+            echo "Successfully updated hash in package.nix"
+          else
+            echo "::error::Failed to verify hash update in package.nix using sed."
+            echo "Expected hash line: hash = \"$NEW_HASH\";"
+            echo "File content after attempted update:"
+            cat package.nix
+            exit 1
+          fi
+
+      # Generate a GitHub App token for creating the PR
+      - name: Generate App Token
+        id: generate_token
+        uses: peter-murray/workflow-application-token-action@v4
+        with:
+          application_id: ${{ secrets.APP_ID }}
+          application_private_key: ${{ secrets.APP_PRIVATE_KEY }}
+
+      # Configure Git for FlakeBuilderApp
+      - name: Configure Git for FlakeBuilderApp
+        run: |
+          git config --global user.email "flakebuilderapp[bot]@users.noreply.github.com"
+          git config --global user.name "flakebuilderapp[bot]"
+          echo "Git user configured: $(git config --global user.name) <$(git config --global user.email)>"
+
+      - name: Create Pull Request with peter-evans/create-pull-request
+        id: create_pr
+        if: env.UPDATE_NEEDED == 'true' && env.PR_EXISTS == 'false'
+        uses: peter-evans/create-pull-request@v8
+        env:
+          CURRENT_COMMIT_SHA: ${{ env.CURRENT_COMMIT_SHA }}
+          LATEST_COMMIT_SHA: ${{ env.LATEST_COMMIT_SHA }}
+          BRANCH_NAME: "update-better-control-commit-${{ env.LATEST_COMMIT_SHA }}"
+          CURRENT_COMMIT_SHORT_SHA: ${{ env.CURRENT_COMMIT_SHORT_SHA }}
+          LATEST_COMMIT_SHORT_SHA: ${{ env.LATEST_COMMIT_SHORT_SHA }}
+        with:
+          token: ${{ steps.generate_token.outputs.token }}
+          author: "flakebuilderapp[bot] <flakebuilderapp[bot]@users.noreply.github.com>"
+          committer: "flakebuilderapp[bot] <flakebuilderapp[bot]@users.noreply.github.com>"
+          labels: automated, better-control
+          delete-branch: true
+          commit-message: "feat: Update better-control to latest 'main' commit ${{ env.LATEST_COMMIT_SHA }}"
+          title: "feat: Update better-control to latest 'main' commit ${{ env.LATEST_COMMIT_SHORT_SHA }}"
+          body: |
+            This PR automatically updates the `better-control` package from commit `${{ env.CURRENT_COMMIT_SHORT_SHA }}` to `${{ env.LATEST_COMMIT_SHORT_SHA }}`.
+
+            Full commit SHAs:
+            - Old: `${{ env.CURRENT_COMMIT_SHA }}`
+            - New: `${{ env.LATEST_COMMIT_SHA }}`
+
+            This update fetches the latest commit from the `main` branch of the `better-ecosystem/better-control` repository.
+
+            Changes generated by GitHub Actions workflow.
+          branch: ${{ env.BRANCH_NAME }}
+          base: main
+
+      - name: Set the PR to automerge
+        if: ${{ steps.create_pr.outputs.pull-request-operation == 'created' }}
+        uses: peter-evans/enable-pull-request-automerge@v3
+        with:
+          token: ${{ steps.generate_token.outputs.token }}
+          pull-request-number: ${{ steps.create_pr.outputs.pull-request-number }}
+          merge-method: "squash"

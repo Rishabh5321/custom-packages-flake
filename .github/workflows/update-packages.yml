@@ -52,14 +52,9 @@ jobs:
           GITHUB_TOKEN: ${{ steps.generate_token.outputs.token }}
         run: |
           echo "Running update script for ${{ matrix.package }}"
-          # Authenticate gh
-          echo "$GITHUB_TOKEN" | gh auth login --with-token
           
-          cd packages/${{ matrix.package }}
-          # Run the update script from the flake root context might be better, but the scripts are designed to be run from root or handle relative paths?
-          # My scripts use relative paths like 'packages/thorium/default.nix' assuming run from root.
-          # So I should NOT cd into the directory, but run it from root.
-          cd ../..
+          # Rely on GITHUB_TOKEN env var for gh authentication
+          
           chmod +x packages/${{ matrix.package }}/update.sh
           ./packages/${{ matrix.package }}/update.sh
 
@@ -70,6 +65,7 @@ jobs:
           git config --global user.name "flakebuilderapp[bot]"
 
       - name: Create Pull Request
+        id: create_pr
         if: env.UPDATE_DETECTED == 'true'
         uses: peter-evans/create-pull-request@v7
         with:
@@ -88,9 +84,9 @@ jobs:
           base: main
 
       - name: Enable Automerge
-        if: env.UPDATE_DETECTED == 'true'
+        if: env.UPDATE_DETECTED == 'true' && steps.create_pr.outputs.pull-request-operation == 'created'
         uses: peter-evans/enable-pull-request-automerge@v3
         with:
           token: ${{ steps.generate_token.outputs.token }}
-          pull-request-number: ${{ env.PULL_REQUEST_NUMBER }}
+          pull-request-number: ${{ steps.create_pr.outputs.pull-request-number }}
           merge-method: "squash"

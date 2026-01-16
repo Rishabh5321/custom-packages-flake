@@ -1,0 +1,206 @@
+# .github/workflows/update-playtorrio.yml
+name: Update Fladder version
+
+on:
+  schedule:
+    # Runs hourly (adjust as needed, e.g., '0 8 * * *' for daily at 8 AM UTC)
+    - cron: "0 */6 * * *"
+  workflow_dispatch: # Allows manual triggering
+
+jobs:
+  update-fladder:
+    runs-on: ubuntu-latest
+    # Prevent multiple runs for the same commit/event
+    concurrency:
+      group: ${{ github.workflow }}-${{ github.ref }}
+      cancel-in-progress: true
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          lfs: false
+          persist-credentials: false
+          fetch-depth: 0
+
+      - name: Generate App Token
+        id: generate_token
+        uses: peter-murray/workflow-application-token-action@v4
+        with:
+          application_id: ${{ secrets.APP_ID }}
+          application_private_key: ${{ secrets.APP_PRIVATE_KEY }}
+
+      - name: Install Nix
+        uses: cachix/install-nix-action@v31
+        with:
+          # Use nixpkgs-unstable channel for potentially newer tools
+          nix_path: nixpkgs=channel:nixos-unstable
+
+      - name: Install dependencies (using Nix)
+        run: |
+          # Install necessary tools using nix profile for better isolation
+          nix profile install nixpkgs#gh nixpkgs#jq nixpkgs#gnused nixpkgs#gnugrep nixpkgs#curl
+
+          # Add Nix binaries to PATH for subsequent steps
+          echo "$HOME/.nix-profile/bin" >> $GITHUB_PATH
+          # Verify installation
+          gh --version
+          jq --version
+          sed --version || true # gnu sed might not have --version
+          grep --version || true # gnu grep might not have --version
+          curl --version
+          nix-prefetch-url --version || echo "nix-prefetch-url installed"
+
+      - name: Get current and latest versions
+        id: versions
+        env:
+          GITHUB_TOKEN: ${{ steps.generate_token.outputs.token }}
+        run: |
+          CURRENT_VERSION=$(grep -oP 'version\s*=\s*"\K[^"]+' package.nix || echo "0.0.0")
+          echo "Current version found in package.nix: $CURRENT_VERSION"
+          echo "CURRENT_VERSION=$CURRENT_VERSION" >> $GITHUB_ENV
+
+          echo "Fetching all releases from GitHub API..."
+          RELEASES=$(gh api repos/DonutWare/Fladder/releases)
+
+          if [ -z "$RELEASES" ]; then
+             echo "::error::Failed to fetch releases from GitHub API."
+             exit 1
+          fi
+
+          # Filter to find the first non-prerelease and non-draft release
+          LATEST_VERSION=$(echo "$RELEASES" | jq -r '[.[] | select(.prerelease == false and .draft == false)][0].tag_name' | sed 's/^v//')
+
+          if [ -z "$LATEST_VERSION" ] || [ "$LATEST_VERSION" == "null" ]; then
+            echo "::error::Could not extract valid release tag from GitHub API response."
+            echo "API Response: $RELEASES"
+            exit 1
+          fi
+
+          echo "Latest version from GitHub API: $LATEST_VERSION"
+          echo "LATEST_VERSION=$LATEST_VERSION" >> $GITHUB_ENV
+
+          if [ "$CURRENT_VERSION" = "$LATEST_VERSION" ]; then
+            echo "Fladder is up-to-date ($CURRENT_VERSION)."
+            echo "UPDATE_NEEDED=false" >> $GITHUB_ENV
+          else
+            echo "Update needed: $CURRENT_VERSION -> $LATEST_VERSION"
+            echo "UPDATE_NEEDED=true" >> $GITHUB_ENV
+          fi
+
+      - name: Check for existing Pull Request
+        id: check_pr
+        # Only run if an update is potentially needed
+        if: env.UPDATE_NEEDED == 'true'
+        env:
+          # Use app token for gh cli to interact with the repo
+          GITHUB_TOKEN: ${{ steps.generate_token.outputs.token }}
+          # Define branch name early using the determined LATEST_VERSION
+          BRANCH_NAME: "update-fladder-${{ env.LATEST_VERSION }}"
+        run: |
+          echo "Checking for existing open PR for branch: $BRANCH_NAME"
+          # Use gh pr list to find open PRs targeting the default branch from the head branch
+          # Ensure you replace 'main' if your default branch is different
+          EXISTING_PR_URL=$(gh pr list --head "$BRANCH_NAME" --base main --state open --json url --jq '.[0].url')
+
+          if [ -n "$EXISTING_PR_URL" ]; then
+            echo "::warning::An open pull request already exists for branch $BRANCH_NAME: $EXISTING_PR_URL"
+            echo "Skipping update and PR creation steps."
+            echo "PR_EXISTS=true" >> $GITHUB_ENV
+          else
+            echo "No existing open PR found for branch $BRANCH_NAME."
+            echo "PR_EXISTS=false" >> $GITHUB_ENV
+          fi
+
+      - name: Update version and hash
+        # Only run if update is needed AND no existing PR was found
+        if: env.UPDATE_NEEDED == 'true' && env.PR_EXISTS == 'false'
+        env:
+          # Pass LATEST_VERSION to this step's environment
+          LATEST_VERSION: ${{ env.LATEST_VERSION }}
+        run: |
+          echo "Updating package.nix to version $LATEST_VERSION"
+
+          # Update version string using GNU sed for portability and -E for extended regex
+          # Using @ as delimiter to avoid issues with version numbers
+          sed -i -E "s@(version\s*=\s*\")[^\"]+@\1${LATEST_VERSION}@" package.nix
+          echo "Version updated in package.nix"
+
+          # Construct the download URL with the new version
+          DOWNLOAD_URL="https://github.com/DonutWare/Fladder/releases/download/v${LATEST_VERSION}/Fladder-Linux-${LATEST_VERSION}.AppImage"
+          echo "Download URL: $DOWNLOAD_URL"
+
+          # Fallback method
+          TEMP_FILE=$(mktemp)
+          curl -sL "$DOWNLOAD_URL" -o "$TEMP_FILE"
+
+          if [ ! -s "$TEMP_FILE" ]; then
+            echo "::error::Failed to download release file from $DOWNLOAD_URL"
+            exit 1
+          fi
+
+          NEW_HASH=$(nix hash file --base64 "$TEMP_FILE" 2>/dev/null)
+
+            if [ -z "$NEW_HASH" ]; then
+              echo "::error::Failed to calculate hash for downloaded file."
+              exit 1
+            fi
+
+            # Clean up temp file
+            rm -f "$TEMP_FILE"
+
+
+          echo "Calculated hash: $NEW_HASH"
+
+
+          # Update the hash in the file
+          sed -i -E "s|(hash\s*=\s*\")[^\"]+(\";)|\1sha256-${NEW_HASH}\2|" package.nix
+
+      - name: Configure Git for FlakeBuilderApp
+        # Only run if update is needed AND no existing PR was found
+        if: env.UPDATE_NEEDED == 'true' && env.PR_EXISTS == 'false'
+        run: |
+          git config --global user.email "flakebuilderapp[bot]@users.noreply.github.com"
+          git config --global user.name "flakebuilderapp[bot]"
+          echo "Git user configured: $(git config --global user.name) <$(git config --global user.email)>"
+
+      - name: Check for changes
+        id: git_status
+        # Only run if update is needed AND no existing PR was found
+        if: env.UPDATE_NEEDED == 'true' && env.PR_EXISTS == 'false'
+        run: |
+          git add package.nix
+          if git diff --staged --quiet; then
+            echo "No changes detected in package.nix after update."
+            echo "CHANGES_EXIST=false" >> $GITHUB_OUTPUT
+          else
+            echo "Changes detected in package.nix."
+            echo "CHANGES_EXIST=true" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Create Pull Request
+        id: create_pr
+        if: env.UPDATE_NEEDED == 'true' && env.PR_EXISTS == 'false' && steps.git_status.outputs.CHANGES_EXIST == 'true'
+        uses: peter-evans/create-pull-request@v8
+        with:
+          token: ${{ steps.generate_token.outputs.token }}
+          author: "flakebuilderapp[bot] <flakebuilderapp[bot]@users.noreply.github.com>"
+          committer: "flakebuilderapp[bot] <flakebuilderapp[bot]@users.noreply.github.com>"
+          labels: automated, fladder-update
+          delete-branch: true
+          commit-message: "feat: Update Fladder to ${{ env.LATEST_VERSION }}"
+          title: "feat: Update Fladder to ${{ env.LATEST_VERSION }}"
+          body: |
+            This PR automatically updates the `Fladder` package from version `${{ env.CURRENT_VERSION }}` to `${{ env.LATEST_VERSION }}`.
+
+            Changes generated by GitHub Actions workflow.
+          branch: "update-fladder-${{ env.LATEST_VERSION }}"
+          base: main
+
+      - name: Set the PR to automerge
+        if: env.UPDATE_NEEDED == 'true' && env.PR_EXISTS == 'false' && steps.create_pr.outputs.pull-request-operation == 'created'
+        uses: peter-evans/enable-pull-request-automerge@v3
+        with:
+          token: ${{ steps.generate_token.outputs.token }}
+          pull-request-number: ${{ steps.create_pr.outputs.pull-request-number }}
+          merge-method: "squash"
