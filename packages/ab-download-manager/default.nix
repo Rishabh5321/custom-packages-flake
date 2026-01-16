@@ -89,6 +89,6 @@ stdenv.mkDerivation rec {
     platforms = [ "x86_64-linux" ];
     mainProgram = "ab-download-manager";
   };
-  
+
   passthru.updateScript = nix-update-script { };
 }
