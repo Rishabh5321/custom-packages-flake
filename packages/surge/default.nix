@@ -25,8 +25,8 @@ buildGoModule rec {
   meta = with lib; {
     description = "Surge - Open-source media server for anime and manga";
     homepage = "https://github.com/surge-downloader/surge";
-    license = licenses.mit; # Assuming MIT, need to check
-    maintainers = with maintainers; [ ];
+    license = licenses.mit;
+    maintainers = with maintainers; [ Rishabh5321 ];
     mainProgram = "surge";
   };
 }

@@ -84,7 +84,7 @@ stdenv.mkDerivation rec {
     description = "A Download Manager that speeds up your downloads";
     homepage = "https://abdownloadmanager.com/";
     license = licenses.gpl3;
-    maintainers = with maintainers; [ ];
+    maintainers = with maintainers; [ Rishabh5321 ];
     platforms = [ "x86_64-linux" ];
     mainProgram = "ab-download-manager";
   };

@@ -19,7 +19,7 @@ let
         description = "Thorium Browser (${variant}) - A fast and secure web browser";
         homepage = "https://thorium.rocks";
         license = licenses.bsd3;
-        maintainers = with maintainers; [ Alex313031 ];
+        maintainers = with maintainers; [ Rishabh5321 ];
         platforms = [ "x86_64-linux" ];
         mainProgram = "thorium";
       };

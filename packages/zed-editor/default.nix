@@ -331,8 +331,7 @@ rustPlatform.buildRustPackage (finalAttrs: {
     changelog = "https://github.com/zed-industries/zed/releases/tag/v${finalAttrs.version}";
     license = lib.licenses.gpl3Only;
     maintainers = with lib.maintainers; [
-      GaetanLepage
-      niklaskorz
+      Rishabh5321
     ];
     mainProgram = "zeditor";
     platforms = lib.platforms.linux ++ lib.platforms.darwin;
