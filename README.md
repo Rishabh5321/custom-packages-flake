@@ -15,6 +15,7 @@ A Nix flake containing custom packages for NixOS and Linux.
 | `playtorrio` | Stream torrents directly |
 | `better-control` | Simple control panel for Linux based on GTK |
 | `ab-download-manager` | A Download Manager that speeds up your downloads |
+| `surge` | Open-source media server for anime and manga (TUI) |
 
 ## Usage
 
