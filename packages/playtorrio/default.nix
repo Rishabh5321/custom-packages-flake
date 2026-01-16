@@ -20,4 +20,6 @@ appimageTools.wrapType2 {
     substituteInPlace $out/share/applications/playtorrio.desktop \
       --replace 'Exec=AppRun' 'Exec=${pname}'
   '';
+
+  passthru.updateScript = ./update.sh;
 }

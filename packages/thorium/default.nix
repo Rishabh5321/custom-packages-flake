@@ -23,6 +23,8 @@ let
         platforms = [ "x86_64-linux" ];
         mainProgram = "thorium";
       };
+
+      passthru.updateScript = ./update.sh;
     };
 in
 {

@@ -1,0 +1,147 @@
+name: Update Packages
+
+on:
+  schedule:
+    - cron: "0 */6 * * *"
+  workflow_dispatch:
+
+jobs:
+  list-packages:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: cachix/install-nix-action@v31
+        with:
+          extra_nix_config: |
+            access-tokens = github.com=${{ secrets.GITHUB_TOKEN }}
+            experimental-features = nix-command flakes
+      - id: set-matrix
+        run: |
+          set -e
+          JSON=$(nix flake show --json)
+          # Select packages, exclude Thorium variants that are handled by a single script (to avoid duplicate runs)
+          # We'll run the update script for 'thorium-avx' which updates all thorium variants.
+          # We can filter out thorium-avx2, sse3, sse4 from the matrix to save resources, 
+          # assuming our script is robust.
+          # Or just let them run (the script updates the file, git diff will handle idempotency).
+          # To be clean, let's just run all. My script is fast.
+          
+          PACKAGES=$(echo "$JSON" | jq -c '.packages."x86_64-linux" | keys | map(select(. != "override" and . != "overrideDerivation"))')
+          echo "matrix=$PACKAGES" >> $GITHUB_OUTPUT
+
+  update-packages:
+    needs: list-packages
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      max-parallel: 1 # Run sequentially to avoid git lock issues if pushing to same branch (or use separate branches)
+      matrix:
+        package: ${{ fromJson(needs.list-packages.outputs.matrix) }}
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - uses: cachix/install-nix-action@v31
+        with:
+          extra_nix_config: |
+            access-tokens = github.com=${{ secrets.GITHUB_TOKEN }}
+            experimental-features = nix-command flakes
+
+      - name: Install dependencies
+        run: |
+          nix profile install nixpkgs#jq nixpkgs#curl nixpkgs#gnused nixpkgs#nix-update
+          
+      - name: Update ${{ matrix.package }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          PACKAGE="${{ matrix.package }}"
+          echo "Checking update script for $PACKAGE..."
+          
+          # Check if updateScript is defined
+          # We use --json to get structured output.
+          # If it fails, it means no updateScript.
+          SCRIPT_JSON=$(nix eval --json .#${PACKAGE}.passthru.updateScript 2>/dev/null || echo "null")
+          
+          if [ "$SCRIPT_JSON" == "null" ]; then
+            echo "No updateScript found for $PACKAGE. Skipping."
+            exit 0
+          fi
+          
+          # Check if it's a string (path) or list
+          TYPE=$(echo "$SCRIPT_JSON" | jq -r 'type')
+          
+          if [ "$TYPE" == "string" ]; then
+            echo "Found custom update script (path): $SCRIPT_JSON"
+            # It's a path in the nix store. We need to map it to the checkout if possible, 
+            # OR just run it. If it expects to be in the repo root, we should run it from there.
+            # Nix paths are absolute. We can just execute it.
+            # BUT, my scripts use $(dirname $0) dependencies. 
+            # If nix copies the script to store, relative paths might break if they assume the *source* tree structure.
+            # My scripts assume they are in the source tree (./seanime-pkg.nix).
+            # If I run the store path, it will try to modify the store file (read-only error).
+            # So I must find the script in the local checkout.
+            
+            # Heuristic: The script is likely at packages/<pkg>/update.sh or similar.
+            # Since I know my structure, I can just try to run it from source if I can find it.
+            # OR, I can create a temporary "run script" that handles this.
+            
+            # Better approach for FUTURE flexibility:
+            # Use `nix-update` for standard things.
+            # For custom things, my scripts should be robust. 
+            # Let's adjust my scripts to accept the file path as ARGUMENT? 
+            # No, standard is `updateScript`.
+            
+            # Re-eval: The user wants "automatic management".
+            # If I use `nix-update` (the tool), it can run the update script!
+            # `nix-update --flake .#pkg` tries to update version.
+            # `nix-update --run .#pkg` runs the update script? No.
+            
+            # Let's simple-mindedly look for the local script matching the store path filename?
+            # Or just assume packages/$PACKAGE/update.sh exists if I created it?
+            # Thorium: packages/thorium/update.sh
+            # Seanime: packages/seanime/update.sh
+            # Playtorrio: packages/playtorrio/update.sh
+            
+            # For Thorium variants, they all use same script.
+            
+            SCRIPT_NAME=$(echo "$SCRIPT_JSON" | tr -d '"') 
+            # SCRIPT_NAME is /nix/store/...-update.sh
+            BASENAME=$(basename "$SCRIPT_NAME")
+            
+            # Find it in packages/
+            LOCAL_SCRIPT=$(find packages -name "$BASENAME" | head -n 1)
+            
+            if [ -n "$LOCAL_SCRIPT" ]; then
+               echo "Found local script: $LOCAL_SCRIPT"
+               chmod +x "$LOCAL_SCRIPT"
+               ./"$LOCAL_SCRIPT"
+            else
+               echo "Could not find local source for script $BASENAME. execution might fail if it tries to write to store."
+               "$SCRIPT_NAME"
+            fi
+            
+          elif [ "$TYPE" == "array" ]; then
+             echo "Found standard updateScript list."
+             # It's like [ "nix-update" "--flake" ... ]
+             # We can execute it.
+             # jq to convert to space separated args?
+             CMD=$(echo "$SCRIPT_JSON" | jq -r 'join(" ")')
+             eval "$CMD"
+          else
+             echo "Unknown updateScript type: $TYPE"
+             exit 1
+          fi
+          
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v7
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: "chore(deps): update ${{ matrix.package }}"
+          title: "Update ${{ matrix.package }}"
+          body: "Automated update for ${{ matrix.package }}"
+          branch: "update-package-${{ matrix.package }}"
+          delete-branch: true
+          labels: automated

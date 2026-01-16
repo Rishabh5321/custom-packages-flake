@@ -2,6 +2,7 @@
 , appimageTools
 , lib
 , extraPkgs ? [ ]
+, nix-update-script
 , ...
 }:
 let
@@ -42,4 +43,6 @@ appimageTools.wrapAppImage {
     mainProgram = pname;
     sourceProvenance = with sourceTypes; [ binaryBytecode ];
   };
+  
+  passthru.updateScript = nix-update-script { };
 }

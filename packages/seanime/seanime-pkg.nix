@@ -22,4 +22,6 @@ pkgs.stdenv.mkDerivation rec {
     homepage = "https://github.com/5rahim/seanime";
     license = pkgs.lib.licenses.gpl3Only;
   };
+
+  passthru.updateScript = ./update.sh;
 }
