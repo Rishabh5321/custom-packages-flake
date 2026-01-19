@@ -1,28 +1,25 @@
-{
-  lib,
-  symlinkJoin,
-  rustPlatform,
-  fetchFromGitHub,
-  versionCheckHook,
-  gitUpdater,
-
-  # buildInputs
-  atk,
-  cef-binary,
-  gtk3,
-  libayatana-appindicator,
-  libxkbcommon,
-  mpv,
-  openssl,
-
-  # nativeBuildInputs
-  wrapGAppsHook4,
-  makeBinaryWrapper,
-  pkg-config,
-
-  # Wrapper
-  libGL,
-  nodejs,
+{ lib
+, symlinkJoin
+, rustPlatform
+, fetchFromGitHub
+, versionCheckHook
+, gitUpdater
+, # buildInputs
+  atk
+, cef-binary
+, gtk3
+, libayatana-appindicator
+, libxkbcommon
+, mpv
+, openssl
+, # nativeBuildInputs
+  wrapGAppsHook4
+, makeBinaryWrapper
+, pkg-config
+, # Wrapper
+  libGL
+, nodejs
+,
 }:
 
 let
