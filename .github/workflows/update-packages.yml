@@ -44,7 +44,7 @@ jobs:
           application_private_key: ${{ secrets.APP_PRIVATE_KEY }}
 
       - name: Install Nix
-        uses: cachix/install-nix-action@v30
+        uses: cachix/install-nix-action@v31
         with:
           nix_path: nixpkgs=channel:nixos-unstable
 
