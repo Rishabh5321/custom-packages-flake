@@ -84,4 +84,4 @@ jobs:
       # To keep it simple, we can skip it here or run it if needed. 
       # Since we just want to build, let's just build.
       - name: Build Nix Flake
-        run: nix build .#${{ matrix.package }}
+        run: nix build .#${{ matrix.package }} --print-build-logs
