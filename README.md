@@ -6,17 +6,19 @@ A Nix flake containing custom packages for NixOS and Linux.
 
 | Package | Description |
 |---------|-------------|
+| `ab-download-manager` | A Download Manager that speeds up your downloads |
+| `anymex` | Anime Streaming App |
+| `better-control` | Simple control panel for Linux based on GTK |
+| `fladder` | A Simple Jellyfin Frontend built on top of Flutter |
+| `grayjay` | Desktop client for Grayjay to stream and download video content |
+| `playtorrio` | Stream torrents directly |
+| `seanime` | Open-source media server for anime and manga |
+| `stremio` | Open-source media player |
+| `surge` | Open-source media server for anime and manga (TUI) |
 | `thorium-avx` | Thorium Browser (AVX optimized) |
 | `thorium-avx2` | Thorium Browser (AVX2 optimized) |
 | `thorium-sse3` | Thorium Browser (SSE3 optimized) |
 | `thorium-sse4` | Thorium Browser (SSE4 optimized) |
-| `seanime` | Open-source media server for anime and manga |
-| `fladder` | A Simple Jellyfin Frontend built on top of Flutter |
-| `playtorrio` | Stream torrents directly |
-| `better-control` | Simple control panel for Linux based on GTK |
-| `ab-download-manager` | A Download Manager that speeds up your downloads |
-| `surge` | Open-source media server for anime and manga (TUI) |
-| `grayjay` | Desktop client for Grayjay to stream and download video content |
 | `zed-editor` | High-performance, multiplayer code editor (Source build) |
 | `zed-editor-bin` | High-performance, multiplayer code editor (Binary) |
 | `zed-editor-fhs` | Zed Editor (Source) wrapped in FHS environment |
