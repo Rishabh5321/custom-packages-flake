@@ -8,7 +8,7 @@
 , ...
 }:
 let
-  pname = "AnymeX";
+  pname = "anymex";
   version = "3.0.3";
   src = fetchurl {
     url = "https://github.com/RyanYuuki/AnymeX/releases/download/v${version}/AnymeX-Linux.AppImage";
