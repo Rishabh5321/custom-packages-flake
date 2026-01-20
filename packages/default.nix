@@ -4,6 +4,7 @@ rec {
   ab-download-manager = pkgs.callPackage ./ab-download-manager/default.nix { };
   better-control = pkgs.callPackage ./better-control/default.nix { };
   fladder = pkgs.callPackage ./fladder/default.nix { };
+  anymex = pkgs.callPackage ./anymex/default.nix { };
   playtorrio = pkgs.callPackage ./playtorrio/default.nix { };
   grayjay = pkgs.callPackage ./grayjay/default.nix { };
   seanime = pkgs.callPackage ./seanime/seanime-pkg.nix { };
