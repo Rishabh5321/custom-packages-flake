@@ -13,18 +13,18 @@ rec {
 
   # Zed Editor
   zed-editor = pkgs.callPackage ./zed-editor/default.nix {
-    rustPlatform = pkgs.makeRustPlatform {
-      cargo = pkgs.rust-bin.stable.latest.default;
-      rustc = pkgs.rust-bin.stable.latest.default;
-    };
+    # rustPlatform = pkgs.makeRustPlatform {
+    #   cargo = pkgs.rust-bin.stable.latest.default;
+    #   rustc = pkgs.rust-bin.stable.latest.default;
+    # };
   };
   zed-editor-fhs = zed-editor.fhs;
 
   zed-editor-preview = pkgs.callPackage ./zed-editor-preview/default.nix {
-    rustPlatform = pkgs.makeRustPlatform {
-      cargo = pkgs.rust-bin.stable.latest.default;
-      rustc = pkgs.rust-bin.stable.latest.default;
-    };
+    # rustPlatform = pkgs.makeRustPlatform {
+    #   cargo = pkgs.rust-bin.stable.latest.default;
+    #   rustc = pkgs.rust-bin.stable.latest.default;
+    # };
   };
   zed-editor-preview-fhs = zed-editor-preview.fhs;
 
