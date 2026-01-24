@@ -20,10 +20,10 @@ buildGoModule rec {
     export HOME=$(mktemp -d)
   '';
 
-  checkFlags = [ "-skip=TestSanitizeFilename" ];
+
 
   meta = with lib; {
-    description = "Surge - Open-source media server for anime and manga";
+    description = "Surge - Open-source TUI Downloader";
     homepage = "https://github.com/surge-downloader/surge";
     license = licenses.mit;
     maintainers = with maintainers; [ Rishabh5321 ];
