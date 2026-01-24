@@ -79,7 +79,7 @@ jobs:
         uses: thejerrybao/setup-swap-space@v1
         with:
           swap-space-path: /swapfile
-          swap-size-gb: 8
+          swap-size-gb: 10
           remove-existing-swap-files: true
 
       - name: Install Nix
