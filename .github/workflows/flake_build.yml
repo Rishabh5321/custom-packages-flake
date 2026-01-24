@@ -37,14 +37,14 @@ jobs:
           JSON=$(nix flake show --json)
           echo "Flake show output:"
           echo "$JSON"
-          
+
           PACKAGES=$(echo "$JSON" | jq -c '.packages."x86_64-linux" | keys | map(select(. != "override" and . != "overrideDerivation"))')
-          
+
           if [ -z "$PACKAGES" ] || [ "$PACKAGES" == "null" ]; then
             echo "No packages found or failed to parse."
             PACKAGES="[]"
           fi
-          
+
           echo "matrix=$PACKAGES" >> $GITHUB_OUTPUT
 
   nix_check_build:
@@ -76,12 +76,11 @@ jobs:
 
       - name: Enable Swap
         if: startsWith(matrix.package, 'zed-editor')
-        run: |
-          sudo fallocate -l 10G /swapfile
-          sudo chmod 600 /swapfile
-          sudo mkswap /swapfile
-          sudo swapon /swapfile
-          sudo swapon --show
+        uses: thejerrybao/setup-swap-space@v1
+        with:
+          swap-space-path: /swapfile
+          swap-size-gb: 8
+          remove-existing-swap-files: true
 
       - name: Install Nix
         uses: cachix/install-nix-action@v31
@@ -102,7 +101,7 @@ jobs:
           authToken: "${{ secrets.CACHIX_AUTH_TOKEN }}"
 
       # Only run flake check once, maybe on the first package or in a separate job
-      # To keep it simple, we can skip it here or run it if needed. 
+      # To keep it simple, we can skip it here or run it if needed.
       # Since we just want to build, let's just build.
       - name: Build Nix Flake
         run: nix build .#${{ matrix.package }} --print-build-logs
