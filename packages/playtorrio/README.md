@@ -32,7 +32,7 @@ To add Playtorrio to your NixOS configuration, add this repository to your flake
 {
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
-    playtorrio.url = "github:Rishabh5321/custom-packages-flake";
+    custom-packages.url = "github:Rishabh5321/custom-packages-flake";
   };
 
   outputs = { self, nixpkgs, playtorrio, ... }: {

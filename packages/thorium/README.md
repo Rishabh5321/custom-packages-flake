@@ -52,7 +52,7 @@ nix profile install github:Rishabh5321/custom-packages-flake#thorium-sse3
    {
      inputs = {
         nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable"; # Note that nixos unstable channel is required
-        thorium.url = "github:Rishabh5321/custom-packages-flake";
+        custom-packages.url = "github:Rishabh5321/custom-packages-flake";
      };
 
      outputs = { self, nixpkgs }: {

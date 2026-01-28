@@ -46,7 +46,7 @@ Currently home-manager is necessary for having for building the server as this f
 
 1. Add the seanime flake to your flake.nix inputs.
 ```nix
-seanime.url = "github:rishabh5321/custom-packages-flake";
+custom-packages.url = "github:rishabh5321/custom-packages-flake";
 ```
 2. Import the seanime module in your NixOS configuration in home.nix:
 ```nix

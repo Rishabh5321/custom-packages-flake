@@ -31,8 +31,7 @@ To add Fladder to your NixOS configuration, add this repository to your flake in
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
     
-    fladder.url = "github:Rishabh5321/custom-packages-flake";
-    fladder.inputs.nixpkgs.follows = "nixpkgs";
+    custom-packages.url = "github:Rishabh5321/custom-packages-flake";
   };
   
   outputs = { self, nixpkgs, fladder, ... }: {

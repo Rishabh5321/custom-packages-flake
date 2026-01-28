@@ -44,7 +44,7 @@ You can install this flake directly in declarative meathod.
 
 1. Add the grayjay flake to your flake.nix inputs.
 ```nix
-grayjay.url = "github:rishabh5321/custom-packages-flake";
+custom-packages.url = "github:rishabh5321/custom-packages-flake";
 ```
 2. Import the grayjay module in your NixOS configuration in home.nix:
 ```nix
