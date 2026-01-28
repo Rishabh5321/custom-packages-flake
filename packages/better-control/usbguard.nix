@@ -1,7 +1,7 @@
 # Change ${username} with your username.
 # Change ${username} with your username.
 # Change ${username} with your username.
-{username,...}: {
+{ username, ... }: {
   services.usbguard = {
     enable = true;
     presentControllerPolicy = "apply-policy";
