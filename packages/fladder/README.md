@@ -46,7 +46,7 @@ To add Fladder to your NixOS configuration, add this repository to your flake in
 ```nix
 {
   environment.systemPackages = [
-    inputs.fladder.packages.${pkgs.stdenv.hostPlatform.system}.fladder
+    inputs.custom-packages.packages.${pkgs.stdenv.hostPlatform.system}.fladder
   ];
 }
 ```
