@@ -73,7 +73,7 @@ appimageTools.wrapAppImage {
     homepage = "https://github.com/RyanYuuki/AnymeX";
     platforms = [ "x86_64-linux" ];
     license = with licenses; [ gpl3Only ];
-    mainProgram = "AnymeX";
+    mainProgram = "anymex";
     sourceProvenance = with sourceTypes; [ binaryBytecode ];
   };
 }
