@@ -17,7 +17,7 @@ nix run github:Rishabh5321/custom-packages-flake#fladder
 To install it into your user profile:
 
 ```bash
-nix profile install github:Rishabh5321/custom-packages-flake
+nix profile install github:Rishabh5321/custom-packages-flake#fladder
 ```
 
 ### Add to NixOS Configuration
