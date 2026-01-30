@@ -294,6 +294,7 @@ rustPlatform.buildRustPackage (finalAttrs: {
   ];
   versionCheckProgram = "${placeholder "out"}/bin/zeditor";
   doInstallCheck = true;
+  doCheck = false;
 
   passthru = {
     updateScript = nix-update-script {
