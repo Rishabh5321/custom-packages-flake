@@ -6,7 +6,7 @@ let
     name = "grayjay-base";
     src = pkgs.fetchurl {
       url = "https://updater.grayjay.app/Apps/Grayjay.Desktop/Grayjay.Desktop-linux-x64.zip";
-      sha256 = "113ii122qgp25mvc0fh8m34zk805c4v1j6lrgzgivrzns88x61hr";
+      sha256 = "0wzkxmzsi3lam46vqjg7ilwvn3a2b7kmi0w6a3dhqjrl2pfzly25";
     };
 
     nativeBuildInputs = [ pkgs.unzip ];
