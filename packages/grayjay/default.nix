@@ -6,7 +6,7 @@ let
     name = "grayjay-base";
     src = pkgs.fetchurl {
       url = "https://updater.grayjay.app/Apps/Grayjay.Desktop/Grayjay.Desktop-linux-x64.zip";
-      sha256 = "0r1pkxrkm6zfy78wpy4njx8whfvc722qcpacgpgwsbb6ak8pnc7v";
+      sha256 = "113ii122qgp25mvc0fh8m34zk805c4v1j6lrgzgivrzns88x61hr";
     };
 
     nativeBuildInputs = [ pkgs.unzip ];
@@ -17,14 +17,14 @@ let
       unzip $src -d $out/share/grayjay
 
       # Ensure the Grayjay executable exists
-      GRAYJAY_EXECUTABLE="$out/share/grayjay/Grayjay.Desktop-linux-x64-v14/Grayjay"
+      GRAYJAY_EXECUTABLE="$out/share/grayjay/Grayjay.Desktop-linux-x64-v16/Grayjay"
       if [ ! -f "$GRAYJAY_EXECUTABLE" ]; then
         echo "Error: Grayjay executable not found in the extracted files!"
         exit 1
       fi
 
       # Check for FUTO.Updater.Client in the same directory
-      FUTO_UPDATER="$out/share/grayjay/Grayjay.Desktop-linux-x64-v14/FUTO.Updater.Client"
+      FUTO_UPDATER="$out/share/grayjay/Grayjay.Desktop-linux-x64-v16/FUTO.Updater.Client"
       if [ ! -f "$FUTO_UPDATER" ]; then
         echo "Warning: FUTO.Updater.Client not found in the extracted files!"
       else
@@ -36,7 +36,7 @@ let
 
       # Copy the icon to the share directory
       mkdir -p $out/share/icons/hicolor/256x256/apps
-      cp "$out/share/grayjay/Grayjay.Desktop-linux-x64-v14/grayjay.png" $out/share/icons/hicolor/256x256/apps/grayjay.png
+      cp "$out/share/grayjay/Grayjay.Desktop-linux-x64-v16/grayjay.png" $out/share/icons/hicolor/256x256/apps/grayjay.png
     '';
   };
 
@@ -108,9 +108,9 @@ let
       export GRAYJAY_DATA_DIR="$HOME/.grayjay"
       mkdir -p "$GRAYJAY_DATA_DIR"
 
-      # Copy the entire Grayjay.Desktop-linux-x64-v14 directory to the writable directory
-      GRAYJAY_SRC_DIR="${grayjay-base}/share/grayjay/Grayjay.Desktop-linux-x64-v14"
-      GRAYJAY_DEST_DIR="$GRAYJAY_DATA_DIR/Grayjay.Desktop-linux-x64-v14"
+      # Copy the entire Grayjay.Desktop-linux-x64-v16 directory to the writable directory
+      GRAYJAY_SRC_DIR="${grayjay-base}/share/grayjay/Grayjay.Desktop-linux-x64-v16"
+      GRAYJAY_DEST_DIR="$GRAYJAY_DATA_DIR/Grayjay.Desktop-linux-x64-v16"
 
       if [ ! -d "$GRAYJAY_DEST_DIR" ] || [ "$GRAYJAY_SRC_DIR" -nt "$GRAYJAY_DEST_DIR" ]; then
         # Create the destination directory if it doesn't exist
