@@ -1,53 +1,55 @@
-{ lib
-, rustPlatform
-, fetchFromGitHub
-, cmake
-, copyDesktopItems
-, curl
-, perl
-, pkg-config
-, protobuf
-, fontconfig
-, freetype
-, libgit2
-, openssl
-, sqlite
-, zlib
-, zstd
-, alsa-lib
-, libxkbcommon
-, wayland
-, libglvnd
-, xorg
-, stdenv
-, makeFontsConf
-, vulkan-loader
-, envsubst
-, nix-update-script
-, cargo-about
-, versionCheckHook
-, buildFHSEnv
-, cargo-bundle
-, git
-, apple-sdk_15
-, darwinMinVersionHook
-, makeBinaryWrapper
-, nodejs
-, libGL
-, libX11
-, libXext
-, livekit-libwebrtc
-, testers
-, writableTmpDirAsHomeHook
-, withGLES ? false
-, buildRemoteServer ? true
-, zed-editor
-,
+{
+  lib,
+  rustPlatform,
+  fetchFromGitHub,
+  cmake,
+  copyDesktopItems,
+  curl,
+  perl,
+  pkg-config,
+  protobuf,
+  fontconfig,
+  freetype,
+  libgit2,
+  openssl,
+  sqlite,
+  zlib,
+  zstd,
+  alsa-lib,
+  libxkbcommon,
+  wayland,
+  libglvnd,
+  libxcb,
+  stdenv,
+  makeFontsConf,
+  vulkan-loader,
+  envsubst,
+  nix-update-script,
+  cargo-about,
+  versionCheckHook,
+  buildFHSEnv,
+  cargo-bundle,
+  git,
+  apple-sdk_15,
+  darwinMinVersionHook,
+  makeBinaryWrapper,
+  nodejs,
+  libGL,
+  libx11,
+  libxext,
+  livekit-libwebrtc,
+  testers,
+  writableTmpDirAsHomeHook,
+
+  withGLES ? false,
+  buildRemoteServer ? true,
+  zed-editor,
 }:
 
 assert withGLES -> stdenv.hostPlatform.isLinux;
 
 let
+  channel = "preview";
   executableName = "zeditor";
   # Based on vscode.fhs
   # Zed allows for users to download and use extensions
@@ -57,9 +59,9 @@ let
   # buildFHSEnv allows for users to use the existing Zed
   # extension tooling without significant pain.
   fhs =
-    { zed-editor
-    , additionalPkgs ? pkgs: [ ]
-    ,
+    {
+      zed-editor,
+      additionalPkgs ? pkgs: [ ],
     }:
     buildFHSEnv {
       # also determines the name of the wrapped command
@@ -169,11 +171,11 @@ rustPlatform.buildRustPackage (finalAttrs: {
     alsa-lib
     libxkbcommon
     wayland
-    xorg.libxcb
+    libxcb
     # required by livekit:
     libGL
-    libX11
-    libXext
+    libx11
+    libxext
   ]
   ++ lib.optionals stdenv.hostPlatform.isDarwin [
     apple-sdk_15
@@ -226,6 +228,7 @@ rustPlatform.buildRustPackage (finalAttrs: {
 
   useNextest = true;
 
+  remoteServerExecutableName = "zed-remote-server-${channel}-${finalAttrs.version}+${channel}";
   installPhase = ''
     runHook preInstall
 
@@ -283,7 +286,7 @@ rustPlatform.buildRustPackage (finalAttrs: {
     )
   ''
   + lib.optionalString buildRemoteServer ''
-    install -Dm755 $release_target/remote_server $remote_server/bin/zed-remote-server-stable-$version
+    install -Dm755 $release_target/remote_server $remote_server/bin/${finalAttrs.remoteServerExecutableName}
   ''
   + ''
     runHook postInstall
@@ -294,7 +297,6 @@ rustPlatform.buildRustPackage (finalAttrs: {
   ];
   versionCheckProgram = "${placeholder "out"}/bin/zeditor";
   doInstallCheck = true;
-  doCheck = false;
 
   passthru = {
     updateScript = nix-update-script {
@@ -318,7 +320,7 @@ rustPlatform.buildRustPackage (finalAttrs: {
     tests = {
       remoteServerVersion = testers.testVersion {
         package = finalAttrs.finalPackage.remote_server;
-        command = "zed-remote-server-stable-${finalAttrs.version} version";
+        command = "${finalAttrs.remoteServerExecutableName} version";
       };
     }
     // lib.optionalAttrs stdenv.hostPlatform.isLinux {
