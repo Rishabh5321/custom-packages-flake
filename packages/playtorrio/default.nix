@@ -1,11 +1,11 @@
 { appimageTools, fetchurl }:
 let
   pname = "playtorrio";
-  version = "2.8.3";
+  version = "2.8.4";
   src = fetchurl {
     name = "${pname}-${version}.AppImage";
     url = "https://github.com/ayman708-UX/PlayTorrio/releases/download/v${version}/PlayTorrio.AppImage";
-    sha256 = "sha256-wHeLLtujqJX5lu6B8pm7Ab9Mhobfuii3hxastktKZbI=";
+    sha256 = "sha256-kngX01xulvXU3xIZ2E7IUzqiPkMWQYq/Q+TKlU4ze0A=";
   };
   appimageContents = appimageTools.extract { inherit pname version src; };
 in
