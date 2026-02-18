@@ -105,7 +105,7 @@ let
 in
 rustPlatform.buildRustPackage (finalAttrs: {
   pname = "zed-editor";
-  version = "0.224.3-pre";
+  version = "0.224.4-pre";
 
   outputs = [
     "out"
@@ -118,7 +118,7 @@ rustPlatform.buildRustPackage (finalAttrs: {
     owner = "zed-industries";
     repo = "zed";
     tag = "v${finalAttrs.version}";
-    hash = "sha256-t1hnwFkb8yvOEUgOnSWnf5OczrxCrUQe7uHNUD0wzAA=";
+    hash = "sha256-fJR/ONp5PGAS8KsoGoN0GXUCxvgTS2en/i8Kq9518Ps=";
   };
 
   postPatch = ''
@@ -138,7 +138,7 @@ rustPlatform.buildRustPackage (finalAttrs: {
     rm -r $out/git/*/candle-book/
   '';
 
-  cargoHash = "sha256-JDZ5HODMn4ug7TW8nsw260AYo0N3lSogx91K2IphR3s=";
+  cargoHash = "sha256-G/yIP9hzBfOTuIbkxgE9pY5RfEFt+kiINTNkHEI9A4o=";
 
   nativeBuildInputs = [
     cmake
