@@ -6,10 +6,10 @@
 }:
 let
   pname = "Fladder";
-  version = "0.9.0";
+  version = "0.10.0";
   src = fetchurl {
     url = "https://github.com/DonutWare/${pname}/releases/download/v${version}/${pname}-Linux-${version}.AppImage";
-    hash = "sha256-L9dyqEGrMlGW6C7Jj4nhM5X/DlJ3vDNL4pSlsVel8Iw=";
+    hash = "sha256-LU2IFM7Jt/Cbr3BNMgUrNFER0RD/oTlBoG1a+znsC1M=";
   };
   appimageContents = appimageTools.extract {
     inherit pname version src;
