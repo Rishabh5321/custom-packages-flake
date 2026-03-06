@@ -7,10 +7,10 @@
 }:
 let
   pname = "p-stream-desktop";
-  version = "1.2.3";
+  version = "1.2.6";
   src = fetchurl {
     url = "https://github.com/p-stream/p-stream-desktop/releases/download/${version}/P-Stream-${version}.AppImage";
-    hash = "sha256-Uf+lzMeUuIMVCMo6sI0rXl4tch/oW8d86PN0uG3ddr8=";
+    hash = "sha256-0N7+pWySTR5qDb2CExFjWzQ7hInOGhOgMjtGjuv8aXM=";
   };
   appimageContents = appimageTools.extract {
     inherit pname version src;
