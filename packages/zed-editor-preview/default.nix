@@ -163,6 +163,7 @@ rustPlatform.buildRustPackage (finalAttrs: {
     freetype
     libgit2
     openssl
+    glib
     sqlite
     zlib
     zstd
@@ -173,6 +174,7 @@ rustPlatform.buildRustPackage (finalAttrs: {
     wayland
     xorg.libxcb
     # required by livekit:
+    glib
     libGL
     libX11
     libXext
