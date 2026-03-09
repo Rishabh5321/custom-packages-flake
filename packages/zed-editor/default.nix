@@ -41,6 +41,7 @@
 , writableTmpDirAsHomeHook
 , withGLES ? false
 , buildRemoteServer ? true
+, runCommand
 , zed-editor
 ,
 }:
@@ -102,6 +103,15 @@ let
     };
 
   gpu-lib = if withGLES then libglvnd else vulkan-loader;
+
+  # webrtc-sys-build requires desktop_capture.ninja to extract WEBRTC_USE_X11
+  # https://github.com/webrtc-rs/webrtc-sys/blob/0.3.13/webrtc-sys-build/src/lib.rs#L122-L135
+  livekit-libwebrtc-custom = runCommand "livekit-libwebrtc-custom" {} ''
+    mkdir -p $out
+    ln -s ${livekit-libwebrtc}/* $out/
+    rm $out/desktop_capture.ninja || true
+    echo "-DWEBRTC_USE_X11" > $out/desktop_capture.ninja
+  '';
 in
 rustPlatform.buildRustPackage (finalAttrs: {
   pname = "zed-editor";
@@ -206,7 +216,7 @@ rustPlatform.buildRustPackage (finalAttrs: {
     ZED_UPDATE_EXPLANATION = "Zed has been installed using Nix. Auto-updates have thus been disabled.";
     # Used by `zed --version`
     RELEASE_VERSION = finalAttrs.version;
-    LK_CUSTOM_WEBRTC = livekit-libwebrtc;
+    LK_CUSTOM_WEBRTC = livekit-libwebrtc-custom;
     RUSTFLAGS = lib.optionalString withGLES "--cfg gles";
   };
 
