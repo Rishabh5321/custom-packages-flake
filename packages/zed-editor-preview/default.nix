@@ -13,6 +13,7 @@
 , openssl
 , sqlite
 , zlib
+, glib
 , zstd
 , alsa-lib
 , libxkbcommon
@@ -147,6 +148,7 @@ rustPlatform.buildRustPackage (finalAttrs: {
     perl
     pkg-config
     protobuf
+    glib
     rustPlatform.bindgenHook
     cargo-about
   ]
