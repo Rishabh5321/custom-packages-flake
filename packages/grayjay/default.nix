@@ -1,5 +1,6 @@
 { buildDotnetModule
 , fetchFromGitLab
+, fetchurl
 , dotnetCorePackages
 , buildNpmPackage
 , lib
@@ -21,6 +22,7 @@
 , dbus
 , atk
 , cups
+, curl
 , libdrm
 , expat
 , libxkbcommon
@@ -32,6 +34,7 @@
 , libsecret
 , nix-update-script
 , autoPatchelfHook
+, unzip
 , makeDesktopItem
 , copyDesktopItems
 , libgcc
@@ -50,6 +53,10 @@ let
     hash = "sha256-dhXUjj9x8v1bfHLPxNtcysj/eKeT3kkSeVuX6PKoykE=";
     fetchSubmodules = true;
     fetchLFS = true;
+  };
+  justCefNative = fetchurl {
+    url = "https://static.grayjay.app/justcef/1/JustCefNative-linux-x64.zip";
+    hash = "sha256-LXOp+QZZcWBd8eP+BpK++AMBo9303+aIDEEYNVWekhE=";
   };
   frontend = buildNpmPackage {
     pname = "grayjay-frontend";
@@ -79,6 +86,7 @@ buildDotnetModule (finalAttrs: {
     libx11
     gtk3
     glib
+    curl
     alsa-lib
     nspr
     nss
@@ -90,6 +98,7 @@ buildDotnetModule (finalAttrs: {
     autoPatchelfHook
     wrapGAppsHook3
     copyDesktopItems
+    unzip
   ];
 
   dontWrapGApps = true;
@@ -110,7 +119,7 @@ buildDotnetModule (finalAttrs: {
     "Grayjay.Engine/Grayjay.Engine/Grayjay.Engine.csproj"
     "Grayjay.Desktop.CEF/Grayjay.Desktop.CEF.csproj"
     "FUTO.MDNS/FUTO.MDNS/FUTO.MDNS.csproj"
-    "JustCef/DotCef.csproj"
+    "JustCef/JustCef.csproj"
   ];
 
   testProjectFile = [
@@ -136,16 +145,36 @@ buildDotnetModule (finalAttrs: {
   preBuild = ''
     rm -r Grayjay.ClientServer/wwwroot/web
     cp -r ${frontend} Grayjay.ClientServer/wwwroot/web
+
+    # Pre-populate JustCef native cache to avoid network download during build
+    justcef_cache="JustCef/obj/justcef/net8.0/1/linux-x64"
+    mkdir -p "$justcef_cache/extracted"
+    cp ${justCefNative} "$justcef_cache/JustCefNative-linux-x64.zip"
+    unzip -q "$justcef_cache/JustCefNative-linux-x64.zip" -d "$justcef_cache/extracted"
+    # Flatten if single top-level directory
+    top_count=$(find "$justcef_cache/extracted" -mindepth 1 -maxdepth 1 | wc -l)
+    if [ "$top_count" = "1" ]; then
+      only_entry=$(find "$justcef_cache/extracted" -mindepth 1 -maxdepth 1)
+      if [ -d "$only_entry" ]; then
+        tmpdir="$justcef_cache/extracted.flatten"
+        mkdir -p "$tmpdir"
+        mv "$only_entry"/* "$tmpdir"/
+        rm -rf "$justcef_cache/extracted"
+        mv "$tmpdir" "$justcef_cache/extracted"
+      fi
+    fi
+    printf "1" > "$justcef_cache/extracted/.justcef.version"
+    printf "https://static.grayjay.app/justcef/1/JustCefNative-linux-x64.zip" > "$justcef_cache/extracted/.justcef.url"
   '';
 
   postInstall = ''
-    chmod +x $out/lib/grayjay/cef/dotcefnative
+    chmod +x $out/lib/grayjay/cef/justcefnative
     chmod +x $out/lib/grayjay/ffmpeg
-    rm $out/lib/grayjay/Portable
+    rm -f $out/lib/grayjay/Portable
     ln -s /tmp/grayjay-launch $out/lib/grayjay/launch
     ln -s /tmp/grayjay-cef-launch $out/lib/grayjay/cef/launch
     mkdir -p $out/share/icons/hicolor/scalable/apps
-    ln -s $out/lib/grayjay/grayjay.png $out/share/icons/hicolor/scalable/apps/grayjay.png
+    ln -sf $out/lib/grayjay/grayjay.png $out/share/icons/hicolor/scalable/apps/grayjay.png
   '';
 
   makeWrapperArgs = [
