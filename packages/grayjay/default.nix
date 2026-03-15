@@ -41,13 +41,13 @@
 ,
 }:
 let
-  version = "17";
+  version = "18";
   src = fetchFromGitLab {
     domain = "gitlab.futo.org";
     owner = "videostreaming";
     repo = "Grayjay.Desktop";
     tag = version;
-    hash = "sha256-/oeoLXKewjYkCO7naZNOzauWm1OYDKnsxXY9EkI7fTM=";
+    hash = "sha256-dhXUjj9x8v1bfHLPxNtcysj/eKeT3kkSeVuX6PKoykE=";
     fetchSubmodules = true;
     fetchLFS = true;
   };
