@@ -16,5 +16,7 @@ rec {
   p-stream-desktop = pkgs.callPackage ./p-stream-desktop/default.nix { };
   hydralauncher = pkgs.callPackage ./hydralauncher/default.nix { };
   shonenx = pkgs.callPackage ./shonenx/default.nix { };
+  opera = pkgs.callPackage ./opera/default.nix { };
+
 
 } // (import ./thorium/default.nix { inherit pkgs; })
