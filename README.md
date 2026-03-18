@@ -14,7 +14,6 @@ A Nix flake containing custom packages for NixOS and Linux.
 | `grayjay` | Desktop client for Grayjay to stream and download video content |
 | `hydralauncher` | Open source game launcher |
 | `mangayomi` | Free and open source application for reading manga and watching anime |
-| `p-stream-desktop` | A desktop application for p-stream |
 | `playtorrio` | Stream torrents directly |
 | `seanime` | Open-source media server for anime and manga |
 | `shonenx` | Anime Streaming Desktop App |
