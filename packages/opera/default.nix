@@ -1,56 +1,56 @@
-{
-  alsa-lib,
-  atk,
-  cairo,
-  cups,
-  curl,
-  dbus,
-  dpkg,
-  expat,
-  fetchurl,
-  fontconfig,
-  freetype,
-  gdk-pixbuf,
-  glib,
-  glib-networking,
-  gtk3,
-  gtk4,
-  lib,
-  libX11,
-  libxcb,
-  libXScrnSaver,
-  libXcomposite,
-  libXcursor,
-  libXdamage,
-  libXext,
-  libXfixes,
-  libXi,
-  libXrandr,
-  libXrender,
-  libXtst,
-  libdrm,
-  libglvnd,
-  libnotify,
-  libpulseaudio,
-  libuuid,
-  libxshmfence,
-  libgbm,
-  nspr,
-  nss,
-  pango,
-  stdenv,
-  systemd,
-  at-spi2-atk,
-  at-spi2-core,
-  autoPatchelfHook,
-  wrapGAppsHook3,
-  qt6,
-  proprietaryCodecs ? false,
-  vivaldi-ffmpeg-codecs,
+{ alsa-lib
+, atk
+, cairo
+, cups
+, curl
+, dbus
+, dpkg
+, expat
+, fetchurl
+, fontconfig
+, freetype
+, gdk-pixbuf
+, glib
+, glib-networking
+, gtk3
+, gtk4
+, lib
+, libX11
+, libxcb
+, libXScrnSaver
+, libXcomposite
+, libXcursor
+, libXdamage
+, libXext
+, libXfixes
+, libXi
+, libXrandr
+, libXrender
+, libXtst
+, libdrm
+, libglvnd
+, libnotify
+, libpulseaudio
+, libuuid
+, libxshmfence
+, libgbm
+, nspr
+, nss
+, pango
+, stdenv
+, systemd
+, at-spi2-atk
+, at-spi2-core
+, autoPatchelfHook
+, wrapGAppsHook3
+, qt6
+, proprietaryCodecs ? false
+, vivaldi-ffmpeg-codecs
+,
 }:
 stdenv.mkDerivation (finalAttrs: {
   pname = "opera";
-  version = "129.0.5823.15";
+  version = "128.0.5807.77";
 
   src = fetchurl {
     url = "${"https://get.geo.opera.com/pub/opera/desktop"}/${finalAttrs.version}/linux/opera-stable_${finalAttrs.version}_amd64.deb";
