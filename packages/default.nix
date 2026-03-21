@@ -7,6 +7,7 @@ rec {
   antigravity = pkgs.callPackage ./antigravity/default.nix { };
   anymex = pkgs.callPackage ./anymex/default.nix { };
   playtorrio = pkgs.callPackage ./playtorrio/default.nix { };
+  playtorrio-v2 = pkgs.callPackage ./playtorrio-v2/default.nix { };
   mangayomi = pkgs.callPackage ./mangayomi/default.nix { };
   sorayomi = pkgs.callPackage ./sorayomi/default.nix { };
   grayjay = pkgs.callPackage ./grayjay/default.nix { };
