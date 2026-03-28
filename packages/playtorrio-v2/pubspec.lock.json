@@ -662,11 +662,11 @@
       "dependency": "direct main",
       "description": {
         "name": "libtorrent_flutter",
-        "sha256": "785f7d9d6bc1d03a8304b91a7855062483d274bcd8d046581ecf474b6dc7a3b6",
+        "sha256": "319fe9194c5cf8e2a72b162ef1139565d82f44f22b6d4dc045daf62fa49858f4",
         "url": "https://pub.dev"
       },
       "source": "hosted",
-      "version": "1.7.3"
+      "version": "1.7.4"
     },
     "lints": {
       "dependency": "transitive",

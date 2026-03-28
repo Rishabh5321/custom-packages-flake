@@ -21,13 +21,13 @@
 
 flutter.buildFlutterApplication (finalAttrs: {
   pname = "playtorrio-v2";
-  version = "1.1.0";
+  version = "1.1.1";
 
   src = fetchFromGitHub {
     owner = "ayman708-UX";
     repo = "PlayTorrioV2";
     tag = "v${finalAttrs.version}";
-    hash = "sha256-5yuTe6q5UFfBcSsrVh5P/ZYujpP7CMN816wdu7y0yWM=";
+    hash = "sha256-uSe3OeX7g6wgXGE8zi6dGXj7cFPZbkEjAtTwizO0x9g=";
   };
 
   inherit targetFlutterPlatform;
