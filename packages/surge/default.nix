@@ -8,7 +8,7 @@ buildGoModule rec {
   version = "0.7.5";
 
   src = fetchFromGitHub {
-    owner = "surge-downloader";
+    owner = "SurgeDM";
     repo = "surge";
     rev = "v${version}";
     hash = "sha256-zI2eCVvj+u16mQstdL9yY0eVSj2YIGRGHlmsbRHoPXA=";
