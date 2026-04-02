@@ -3,7 +3,7 @@
 set -e
 
 PACKAGE="surge"
-OWNER="surge-downloader"
+OWNER="SurgeDM"
 REPO="surge"
 NIX_FILE="packages/$PACKAGE/default.nix"
 
