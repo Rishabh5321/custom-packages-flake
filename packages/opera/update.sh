@@ -14,12 +14,21 @@ fi
 
 echo "Checking latest version for Opera..."
 
-# Get the latest version from the Opera download server
-# The directory listing at https://get.geo.opera.com/pub/opera/desktop/ contains version numbers
-latest_rev=$(curl -sL https://get.geo.opera.com/pub/opera/desktop/ | grep -oP 'href="\K[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+(?=/")' | sort -V | tail -n1)
+# Get the latest versions from the Opera download server
+# We check the most recent versions and look for one that has a Linux binary
+all_versions=$(curl -sL https://get.geo.opera.com/pub/opera/desktop/ | grep -oP 'href="\K[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+(?=/")' | sort -rV | head -n 10)
+
+latest_rev=""
+for v in $all_versions; do
+    check_url="https://get.geo.opera.com/pub/opera/desktop/${v}/linux/opera-stable_${v}_amd64.deb"
+    if curl -sLI --head "$check_url" | grep "200 OK" > /dev/null; then
+        latest_rev=$v
+        break
+    fi
+done
 
 if [ -z "$latest_rev" ]; then
-    echo "❌ Failed to fetch latest version"
+    echo "❌ Failed to fetch latest version with Linux binary"
     exit 1
 fi
 
