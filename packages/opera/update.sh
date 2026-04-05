@@ -16,10 +16,12 @@ echo "Checking latest version for Opera..."
 
 # Get the latest versions from the Opera download server
 # We check the most recent versions and look for one that has a Linux binary
-all_versions=$(curl -sL https://get.geo.opera.com/pub/opera/desktop/ | grep -oP 'href="\K[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+(?=/")' | sort -rV | head -n 10)
+all_versions=$(curl -sL https://get.geo.opera.com/pub/opera/desktop/ | grep -oP 'href="\K[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+(?=/")' | sort -rV)
+# We limit to the top 10 most recent versions to check for Linux binaries
+recent_versions=$(echo "$all_versions" | head -n 10)
 
 latest_rev=""
-for v in $all_versions; do
+for v in $recent_versions; do
     check_url="https://get.geo.opera.com/pub/opera/desktop/${v}/linux/opera-stable_${v}_amd64.deb"
     if curl -sLI --head "$check_url" | grep "200 OK" > /dev/null; then
         latest_rev=$v
