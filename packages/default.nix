@@ -18,6 +18,7 @@ rec {
   hydralauncher = pkgs.callPackage ./hydralauncher/default.nix { };
   shonenx = pkgs.callPackage ./shonenx/default.nix { };
   opera = pkgs.callPackage ./opera/default.nix { };
+  skystream = pkgs.callPackage ./skystream/default.nix { };
 
 
 } // (import ./thorium/default.nix { inherit pkgs; })
