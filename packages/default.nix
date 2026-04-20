@@ -14,6 +14,7 @@ rec {
   seanime = pkgs.callPackage ./seanime/seanime-pkg.nix { };
   surge = pkgs.callPackage ./surge/default.nix { };
   stremio = pkgs.callPackage ./stremio/default.nix { };
+  helium = pkgs.callPackage ./helium/default.nix { };
   hydralauncher = pkgs.callPackage ./hydralauncher/default.nix { };
   shonenx = pkgs.callPackage ./shonenx/default.nix { };
   opera = pkgs.callPackage ./opera/default.nix { };
