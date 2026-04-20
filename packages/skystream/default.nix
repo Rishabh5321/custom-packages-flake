@@ -25,10 +25,10 @@
 let
   icu74 = stdenv.mkDerivation rec {
     pname = "icu4c";
-    version = "74.2";
+    version = "2.2.1";
     src = fetchurl {
       url = "https://github.com/unicode-org/icu/releases/download/release-${lib.replaceStrings [ "." ] [ "-" ] version}/icu4c-${lib.replaceStrings [ "." ] [ "_" ] version}-src.tgz";
-      hash = "sha256-aNsIIhKpbW9T411g9H04uWLp+dIHp0z6x4Apro/14Iw=";
+      hash = "sha256-BIioBbskyX5TQB1ZZy91HDfTRqngu9EDrFTucluRK/k=";
     };
     postPatch = ''
       patchShebangs source/configure
