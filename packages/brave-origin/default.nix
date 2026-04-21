@@ -8,8 +8,7 @@ let
   allArchives = {
     x86_64-linux = {
       url = "https://github.com/brave/brave-browser/releases/download/v${version}/brave-origin-nightly_${version}_amd64.deb";
-      hash = "Prefetching https://github.com/brave/brave-browser/releases/download/v1.91.83/brave-origin-nightly_1.91.83_amd64.deb...
-sha256-mqPCdMMLWQ7pgbK2LRZqbDj+GUrX5+/Uj9CkmCq+M/k=";
+      hash = "sha256-mqPCdMMLWQ7pgbK2LRZqbDj+GUrX5+/Uj9CkmCq+M/k=";
     };
   };
 

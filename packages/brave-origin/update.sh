@@ -56,7 +56,7 @@ fi
 
 get_hash() {
   local url="$1"
-  echo "Prefetching $url..."
+  echo "Prefetching $url..." >&2
   nix-prefetch-url --type sha256 "$url" | xargs nix hash to-sri --type sha256
 }
 
