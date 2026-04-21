@@ -5,6 +5,7 @@ rec {
   better-control = pkgs.callPackage ./better-control/default.nix { };
   fladder = pkgs.callPackage ./fladder/default.nix { };
   antigravity = pkgs.callPackage ./antigravity/default.nix { };
+  brave-origin = pkgs.callPackage ./brave-origin/default.nix { };
   anymex = pkgs.callPackage ./anymex/default.nix { };
   playtorrio = pkgs.callPackage ./playtorrio/default.nix { };
   playtorrio-v2 = pkgs.callPackage ./playtorrio-v2/default.nix { };
