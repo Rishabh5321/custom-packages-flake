@@ -52,7 +52,7 @@ custom-packages.url = "github:rishabh5321/custom-packages-flake";
 ```nix
 { inputs, ... }: {
    imports = [
-     inputs.custom-packages.packages.${pkgs.stdenv.hostPlatform.system}.seanime
+     inputs.custom-packages.packages.nixosModules.seanime
    ];
 }
 ```
