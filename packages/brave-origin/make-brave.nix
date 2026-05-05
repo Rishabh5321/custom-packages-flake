@@ -224,8 +224,8 @@ stdenv.mkDerivation {
 
     for icon in ''${icon_sizes[*]}
     do
-        mkdir -p $out/share/icons/hicolor/$icon\x$icon/apps
-        ln -s $out/opt/brave.com/${packagePath}/product_logo_$icon.png $out/share/icons/hicolor/$icon\x$icon/apps/brave-origin-nightly.png
+        mkdir -p $out/share/icons/hicolor/''${icon}x''${icon}/apps
+        ln -s $out/opt/brave.com/${packagePath}/product_logo_''${icon}_nightly.png $out/share/icons/hicolor/''${icon}x''${icon}/apps/brave-origin-nightly.png
     done
 
     # Replace xdg-settings and xdg-mime
