@@ -14,10 +14,10 @@
 }:
 let
   pname = "anymex";
-  version = "3.0.8";
+  version = "3.0.9";
   src = fetchurl {
     url = "https://github.com/RyanYuuki/AnymeX/releases/download/v${version}/AnymeX-Linux.AppImage";
-    hash = "sha256-n0HJiirPfqbxD+KpXlqlgGOwvSgyOY8Lecu3JLAXqxw=";
+    hash = "sha256-Tj9PU6Lyxrs5RvyCDCLJrYpkfSG2gu6oGBEvKcdZnpM=";
   };
   appimageContents = appimageTools.extract {
     inherit pname version src;
