@@ -14,6 +14,7 @@ rec {
   grayjay = pkgs.callPackage ./grayjay/default.nix { };
   seanime = pkgs.callPackage ./seanime/seanime-pkg.nix { };
   stremio = pkgs.callPackage ./stremio/default.nix { };
+  stremio-enhanced = pkgs.callPackage ./stremio-enhanced/default.nix { };
   helium = pkgs.callPackage ./helium/default.nix { };
   hydralauncher = pkgs.callPackage ./hydralauncher/default.nix { };
   shonenx = pkgs.callPackage ./shonenx/default.nix { };
