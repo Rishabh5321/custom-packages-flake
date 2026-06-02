@@ -19,6 +19,7 @@
 , icu
 , openssl
 , jdk
+, libsecret
 ,
 }:
 
@@ -76,6 +77,7 @@ stdenv.mkDerivation rec {
     icu74
     openssl
     jdk
+    libsecret
     stdenv.cc.cc.lib
   ];
 
