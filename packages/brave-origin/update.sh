@@ -13,17 +13,17 @@ CURRENT_VERSION=$(grep -oP 'version\s*=\s*"\K[^"]+' "$PACKAGE_FILE" || echo "0.0
 echo "Current version: $CURRENT_VERSION"
 
 echo "Fetching releases from GitHub API..."
-RELEASES=$(gh api repos/brave/brave-browser/releases?per_page=20)
+RELEASES=$(gh api repos/brave/brave-browser/releases?per_page=100)
 
-# Find the latest prerelease that has brave-origin-nightly x86_64-linux asset
+# Find the latest stable release that has brave-origin x86_64-linux asset
 RELEASE_JSON=$(echo "$RELEASES" | jq -c '
   map(
-    select(.prerelease)
+    select((.name | startswith("Release ")) and (.prerelease | not))
     | .tag_name as $tag
     | ($tag | ltrimstr("v")) as $ver
     | .assets as $assets
     | select(
-        any($assets[]?.name; . == ("brave-origin-nightly_" + $ver + "_amd64.deb"))
+        any($assets[]?.name; . == ("brave-origin_" + $ver + "_amd64.deb"))
       )
   )
   | first
@@ -62,7 +62,7 @@ get_hash() {
 
 # Base URL for downloads
 BASE_URL="https://github.com/brave/brave-browser/releases/download/v${LATEST_VERSION}"
-ASSET_NAME="brave-origin-nightly_${LATEST_VERSION}_amd64.deb"
+ASSET_NAME="brave-origin_${LATEST_VERSION}_amd64.deb"
 
 # Fetch hash for x86_64-linux
 HASH_AMD64=$(get_hash "$BASE_URL/$ASSET_NAME")
@@ -78,7 +78,7 @@ let
 
   allArchives = {
     x86_64-linux = {
-      url = "https://github.com/brave/brave-browser/releases/download/v\${version}/brave-origin-nightly_\${version}_amd64.deb";
+      url = "https://github.com/brave/brave-browser/releases/download/v\${version}/brave-origin_\${version}_amd64.deb";
       hash = "${HASH_AMD64}";
     };
   };

@@ -85,7 +85,7 @@ let
     escapeShellArg
     ;
 
-  packagePath = "brave-origin-nightly";
+  packagePath = pname;
 
   deps = [
     alsa-lib
@@ -212,9 +212,9 @@ stdenv.mkDerivation {
     done
 
     # Fix paths
-    substituteInPlace $out/share/applications/{brave-origin-nightly,com.brave.Origin.nightly}.desktop \
-        --replace-fail /usr/bin/brave-origin-nightly $out/bin/brave-origin
-    substituteInPlace $out/share/gnome-control-center/default-apps/brave-origin-nightly.xml \
+    substituteInPlace $out/share/applications/{brave-origin,com.brave.Origin}.desktop \
+        --replace-fail /usr/bin/brave-origin $out/bin/brave-origin
+    substituteInPlace $out/share/gnome-control-center/default-apps/brave-origin.xml \
         --replace-fail /opt/brave.com $out/opt/brave.com
     substituteInPlace $out/opt/brave.com/${packagePath}/default-app-block \
         --replace-fail /opt/brave.com $out/opt/brave.com
@@ -225,7 +225,7 @@ stdenv.mkDerivation {
     for icon in ''${icon_sizes[*]}
     do
         mkdir -p $out/share/icons/hicolor/''${icon}x''${icon}/apps
-        ln -s $out/opt/brave.com/${packagePath}/product_logo_''${icon}_nightly.png $out/share/icons/hicolor/''${icon}x''${icon}/apps/brave-origin-nightly.png
+        ln -s $out/opt/brave.com/${packagePath}/product_logo_''${icon}.png $out/share/icons/hicolor/''${icon}x''${icon}/apps/brave-origin.png
     done
 
     # Replace xdg-settings and xdg-mime
