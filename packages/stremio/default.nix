@@ -1,24 +1,21 @@
-{
-  lib,
-  rustPlatform,
-  fetchFromGitHub,
-  versionCheckHook,
-
-  # buildInputs
-  gtk4,
-  glib-networking,
-  libadwaita,
-  libepoxy,
-  libsoup_3,
-  mpv,
-  webkitgtk_6_0,
-
-  # nativeBuildInputs
-  pkg-config,
-  wrapGAppsHook4,
-
-  # Wrapper
-  nodejs,
+{ lib
+, rustPlatform
+, fetchFromGitHub
+, versionCheckHook
+, # buildInputs
+  gtk4
+, glib-networking
+, libadwaita
+, libepoxy
+, libsoup_3
+, mpv
+, webkitgtk_6_0
+, # nativeBuildInputs
+  pkg-config
+, wrapGAppsHook4
+, # Wrapper
+  nodejs
+,
 }:
 
 rustPlatform.buildRustPackage (finalAttrs: {
