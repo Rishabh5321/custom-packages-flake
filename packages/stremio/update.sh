@@ -2,7 +2,7 @@
 set -e
 
 # Stremio Update Script
-# Updates to the latest tag and syncs CEF version from upstream Flatpak configuration
+# Updates to the latest tag, gets the source hash, and updates cargoHash using nix build
 
 # 1. Fetch latest tag (ignoring 'v' prefix if present)
 echo "Fetching latest tag from Stremio/stremio-linux-shell..."
@@ -28,72 +28,36 @@ if [ -n "$GITHUB_ENV" ]; then
     echo "LATEST_VERSION=$VERSION" >> $GITHUB_ENV
 fi
 
-# 2. Get the COMMIT SHA for this tag
-COMMIT_SHA=$(gh api repos/Stremio/stremio-linux-shell/git/ref/tags/${LATEST_TAG} --jq .object.sha)
-
-# 3. Fetch the flatpak manifest to get CEF details
-echo "Fetching com.stremio.Stremio.Devel.json for commit $COMMIT_SHA..."
-FLATPAK_URL="https://raw.githubusercontent.com/Stremio/stremio-linux-shell/${COMMIT_SHA}/flatpak/com.stremio.Stremio.Devel.json"
-FLATPAK_JSON=$(curl -s "$FLATPAK_URL")
-
-# Robust recursive search for the object with name="cef"
-CEF_URL=$(echo "$FLATPAK_JSON" | jq -r '.. | select(type == "object" and .name == "cef") | .sources[] | select(.type == "archive") | .url')
-CEF_SHA256=$(echo "$FLATPAK_JSON" | jq -r '.. | select(type == "object" and .name == "cef") | .sources[] | select(.type == "archive") | .sha256')
-
-if [ -z "$CEF_URL" ]; then
-    echo "Error: Could not find CEF URL in flatpak manifest."
-    exit 1
-fi
-
-echo "Found CEF URL: $CEF_URL"
-
-# Extract versions from filename
-# Pattern: cef_binary_VERSION+gGITREVISION+chromium-CHROMIUMVERSION_linux64_minimal.tar.bz2
-# Example: cef_binary_130.0.21+g54811fe+chromium-138.0.7204.101_linux64_minimal.tar.bz2
-
-BASENAME=$(basename "$CEF_URL")
-# Remove prefix and suffix
-TEMP=${BASENAME#cef_binary_}
-TEMP=${TEMP%_linux64_minimal.tar.bz2}
-
-# Split by +
-CEF_VERSION=$(echo "$TEMP" | cut -d+ -f1)
-GIT_REVISION=$(echo "$TEMP" | cut -d+ -f2 | sed 's/^g//')
-CHROMIUM_VERSION=$(echo "$TEMP" | cut -d+ -f3 | sed 's/^chromium-//')
-
-echo "Extracted CEF details:"
-echo "  Version: $CEF_VERSION"
-echo "  Git Rev: $GIT_REVISION"
-echo "  Chrome:  $CHROMIUM_VERSION"
-echo "  SHA256:  $CEF_SHA256"
-
-# Convert SHA256 to SRI (because we like SRI)
-CEF_SRI=$(nix hash to-sri --type sha256 "$CEF_SHA256")
-echo "  SRI:     $CEF_SRI"
-
-# 4. Prefetch source code hash
+# 2. Prefetch source code hash
 echo "Prefetching source code..."
 SRC_HASH=$(nix-prefetch-github Stremio stremio-linux-shell --rev "${LATEST_TAG}" | jq -r .hash)
 echo "  Source Hash: $SRC_HASH"
 
-# 5. Update default.nix using context-aware sed to avoid collisions
 FILE="packages/stremio/default.nix"
 
-# Update generic version - target the block with rustPlatform.buildRustPackage
-sed -i "/buildRustPackage/,/cargoLock/ s/version = \".*\";/version = \"$VERSION\";/" "$FILE"
+# 3. Update version and source hash in default.nix
+sed -i -E "s@(version\s*=\s*\")[^\"]+(\";)@\1${VERSION}\2@" "$FILE"
+sed -i -E "s@(hash\s*=\s*\")[^\"]+(\";)@\1${SRC_HASH}\2@" "$FILE"
 
-# Update source rev
-sed -i "s/rev = \".*\";/rev = \"$COMMIT_SHA\";/" "$FILE"
+# 4. Set cargoHash to fake hash to force nix to rebuild cargo deps and show the correct hash
+FAKE_HASH="sha256-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
+sed -i -E "s@(cargoHash\s*=\s*\")[^\"]+(\";)@\1${FAKE_HASH}\2@" "$FILE"
 
-# Update source hash
-sed -i "s|sha256 = \".*\";|sha256 = \"$SRC_HASH\";|" "$FILE"
+# 5. Run nix build and capture the hash mismatch error
+echo "Building package to calculate cargoHash..."
+BUILD_OUTPUT=$(nix build .#stremio --no-link 2>&1 || true)
 
-# Update CEF details - target the cefPinned block
-sed -i "/cefPinned =/,/srcHashes/ s/version = \".*\";/version = \"$CEF_VERSION\";/" "$FILE"
-sed -i "s/gitRevision = \".*\";/gitRevision = \"$GIT_REVISION\";/" "$FILE"
-sed -i "s/chromiumVersion = \".*\";/chromiumVersion = \"$CHROMIUM_VERSION\";/" "$FILE"
+CARGO_HASH=$(echo "$BUILD_OUTPUT" | grep -oP 'got:\s+\Ksha256-\S+' || echo "$BUILD_OUTPUT" | grep -o 'sha256-[a-zA-Z0-9/+=]*' | tail -n 1)
 
-# Update CEF Hash (x86_64-linux)
-sed -i "s|x86_64-linux = \".*\";|x86_64-linux = \"$CEF_SRI\";|" "$FILE"
+if [ -z "$CARGO_HASH" ] || [ "$CARGO_HASH" == "$FAKE_HASH" ]; then
+    echo "Failed to calculate cargoHash. Build output:"
+    echo "$BUILD_OUTPUT"
+    exit 1
+fi
+
+echo "  Cargo Hash:  $CARGO_HASH"
+
+# 6. Update cargoHash in default.nix
+sed -i -E "s@(cargoHash\s*=\s*\")[^\"]+(\";)@\1${CARGO_HASH}\2@" "$FILE"
 
 echo "Update complete!"
