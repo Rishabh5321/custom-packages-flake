@@ -11,6 +11,7 @@ rec {
   playtorrio = pkgs.callPackage ./playtorrio/default.nix { };
   playtorrio-v2 = pkgs.callPackage ./playtorrio-v2/default.nix { };
   mangayomi = pkgs.callPackage ./mangayomi/default.nix { };
+  nuvio = pkgs.callPackage ./nuvio/default.nix { };
   sorayomi = pkgs.callPackage ./sorayomi/default.nix { };
   grayjay = pkgs.callPackage ./grayjay/default.nix { };
   seanime = pkgs.callPackage ./seanime/seanime-pkg.nix { };
