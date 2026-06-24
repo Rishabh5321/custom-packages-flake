@@ -20,7 +20,7 @@
 
 rustPlatform.buildRustPackage (finalAttrs: {
   pname = "stremio-linux-shell";
-  version = "1.0.0-beta.14";
+  version = "1.0.0-beta.15";
 
   strictDeps = true;
   __structuredAttrs = true;
@@ -29,10 +29,10 @@ rustPlatform.buildRustPackage (finalAttrs: {
     owner = "Stremio";
     repo = "stremio-linux-shell";
     tag = "v${finalAttrs.version}";
-    hash = "sha256-g7QZ+kYhT7NJ1HKSnV+VBDI/CGeLfJtXn0v9xWCCP/4=";
+    hash = "sha256-OBxOFpmqUevOWcTWt5z8FMxogprLWi5F2IQrUj19yq0=";
   };
 
-  cargoHash = "sha256-euD3ogHwmOXu9AwvZDm23bCgmITwS4SntmfNUSL3WbU=";
+  cargoHash = "sha256-KaB2S3toyoIB7ZGHL4iINXHz0j7EirtMNLUL60VkS7U=";
 
   nativeBuildInputs = [
     pkg-config
