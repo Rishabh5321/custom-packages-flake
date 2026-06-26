@@ -7,7 +7,11 @@
 , wrapGAppsHook3
 , glib
 , gtk3
-, xorg
+, libX11
+, libXext
+, libXi
+, libXrender
+, libXtst
 , libxkbcommon
 , libGL
 , dbus
@@ -41,11 +45,11 @@ stdenv.mkDerivation rec {
   buildInputs = [
     glib
     gtk3
-    xorg.libX11
-    xorg.libXext
-    xorg.libXi
-    xorg.libXrender
-    xorg.libXtst
+    libX11
+    libXext
+    libXi
+    libXrender
+    libXtst
     libxkbcommon
     libGL
     dbus
@@ -80,7 +84,7 @@ stdenv.mkDerivation rec {
     ln -sf "${torrserver}/bin/torrserver" "\$RUNTIME_DIR/native/torrserver/torrserver"
 
     # Set up library path including OpenGL drivers for GPU acceleration
-    export LD_LIBRARY_PATH="/run/opengl-driver/lib:/run/opengl-driver-32/lib:${lib.makeLibraryPath [ mpv libGL xorg.libX11 xorg.libXext xorg.libXi xorg.libXrender xorg.libXtst libxkbcommon alsa-lib stdenv.cc.cc.lib ]}:\$LD_LIBRARY_PATH"
+    export LD_LIBRARY_PATH="/run/opengl-driver/lib:/run/opengl-driver-32/lib:${lib.makeLibraryPath [ mpv libGL libX11 libXext libXi libXrender libXtst libxkbcommon alsa-lib stdenv.cc.cc.lib ]}:\$LD_LIBRARY_PATH"
 
     # Set up hardware video acceleration driver paths for VA-API and VDPAU on NixOS
     export LIBVA_DRIVERS_PATH="/run/opengl-driver/lib/dri:\$LIBVA_DRIVERS_PATH"
