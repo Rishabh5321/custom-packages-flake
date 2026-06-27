@@ -15,7 +15,7 @@ echo "Current plugin URL:              $CURRENT_PLUGIN_URL"
 
 # 2. Fetch latest Stremio-Enhanced release
 echo "Fetching latest stremio-enhanced release from GitHub API..."
-RELEASES=$(gh api repos/REVENGE977/stremio-enhanced/releases)
+RELEASES=$(curl -sL https://api.github.com/repos/REVENGE977/stremio-enhanced/releases)
 LATEST_TAG=$(echo "$RELEASES" | jq -r '[.[] | select(.prerelease == false and .draft == false)][0].tag_name')
 LATEST_VERSION=$(echo "$LATEST_TAG" | sed 's/^v//')
 
@@ -37,7 +37,7 @@ echo "Latest server.js URL:            $LATEST_SERVER_URL"
 
 # 4. Fetch latest auto-external-player.plugin.js Gist URL
 echo "Fetching latest plugin URL from Gist..."
-LATEST_PLUGIN_URL=$(gh api gists/5e53080b453f9deafb0d250fbc2e8666 | jq -r '.files["auto-external-player.plugin.js"].raw_url')
+LATEST_PLUGIN_URL=$(curl -sL https://api.github.com/gists/5e53080b453f9deafb0d250fbc2e8666 | jq -r '.files["auto-external-player.plugin.js"].raw_url')
 if [ -z "$LATEST_PLUGIN_URL" ] || [ "$LATEST_PLUGIN_URL" == "null" ]; then
     echo "Failed to retrieve plugin URL."
     exit 1
