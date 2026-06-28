@@ -29,4 +29,10 @@ NEW_HASH=$(nix-prefetch-url "$URL")
 sed -i "s/version = \".*\"/version = \"$VERSION\"/" "$NIX_FILE"
 sed -i "s/sha256 = \".*\"/sha256 = \"$NEW_HASH\"/" "$NIX_FILE"
 
+if [ -n "${GITHUB_ENV:-}" ]; then
+    echo "UPDATE_DETECTED=true" >> "$GITHUB_ENV"
+    echo "LATEST_VERSION=$VERSION" >> "$GITHUB_ENV"
+fi
+
 echo "Updated ShonenX to version $VERSION"
+

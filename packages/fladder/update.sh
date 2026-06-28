@@ -42,4 +42,9 @@ else
     echo "Warning: Could not find dart.fetchGitHashesScript, git-hashes.json not updated"
 fi
 
+if [ -n "${GITHUB_ENV:-}" ]; then
+    echo "UPDATE_DETECTED=true" >> "$GITHUB_ENV"
+    echo "LATEST_VERSION=$latestVersion" >> "$GITHUB_ENV"
+fi
+
 echo "fladder updated to $latestVersion"
