@@ -23,6 +23,7 @@
 , alsa-plugins
 , gst_all_1
 , libglvnd
+, jdk
 }:
 
 stdenv.mkDerivation rec {
@@ -62,6 +63,11 @@ stdenv.mkDerivation rec {
     gst_all_1.gst-plugins-good
     gst_all_1.gst-plugins-bad
     libglvnd
+    jdk
+  ];
+
+  autoPatchelfIgnoreMissingDeps = [
+    "libjvm.so"
   ];
 
   sourceRoot = ".";
@@ -71,7 +77,12 @@ stdenv.mkDerivation rec {
 
     mkdir -p $out/bin $out/lib/shonenx $out/share/applications $out/share/icons/hicolor/256x256/apps
 
-    cp -r * $out/lib/shonenx/
+    cp -r linux/* $out/lib/shonenx/
+
+    chmod +x $out/lib/shonenx/shonenx
+
+    # Fix libdartjni.so RPATH to find libjvm.so
+    patchelf --add-rpath "${jdk}/lib/openjdk/lib/server" $out/lib/shonenx/lib/libdartjni.so
 
     # Install icon
     if [ -f "$out/lib/shonenx/data/flutter_assets/assets/icons/app_icon-modified-2.png" ]; then
@@ -95,7 +106,7 @@ stdenv.mkDerivation rec {
     EOF
 
     makeWrapper $out/lib/shonenx/shonenx $out/bin/shonenx \
-      --prefix LD_LIBRARY_PATH : ${lib.makeLibraryPath [ mpv libglvnd alsa-lib gst_all_1.gstreamer gst_all_1.gst-plugins-base gst_all_1.gst-plugins-good gst_all_1.gst-plugins-bad ]}:$out/lib/shonenx/lib \
+      --prefix LD_LIBRARY_PATH : ${lib.makeLibraryPath [ mpv libglvnd alsa-lib gst_all_1.gstreamer gst_all_1.gst-plugins-base gst_all_1.gst-plugins-good gst_all_1.gst-plugins-bad ]}:$out/lib/shonenx/lib:"${jdk}/lib/openjdk/lib/server" \
       --prefix PATH : ${lib.makeBinPath [ mpv curl ]} \
       --set SSL_CERT_FILE "${cacert}/etc/ssl/certs/ca-bundle.crt" \
       --prefix GIO_EXTRA_MODULES : "${glib-networking}/lib/gio/modules" \
