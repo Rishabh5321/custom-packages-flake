@@ -23,16 +23,17 @@
 , alsa-lib
 , mpv
 , torrserver
+, libgbm
 }:
 
 stdenv.mkDerivation rec {
   pname = "nuvio";
-  version = "1.1.8";
-  tag = "0.1.8-alpha";
+  version = "0.1.9-alpha";
+  tag = "0.1.9-alpha";
 
   src = fetchurl {
-    url = "https://github.com/aelrased/NuvioDesktop/releases/download/${tag}/nuvio_${version}_amd64.deb";
-    hash = "sha256-OP2uanW/b19QsG1lYQD9B/8J9CigwFUl2uUDn1+JKyQ=";
+    url = "https://github.com/aelrased/NuvioDesktop/releases/download/${tag}/Nuvio-${version}_amd64.deb";
+    hash = "sha256-4Z+XjOp9ggQ21pRlDgPwioLSPyJqplsTUtLamdaaHbY=";
   };
 
   nativeBuildInputs = [
@@ -62,6 +63,7 @@ stdenv.mkDerivation rec {
     stdenv.cc.cc.lib
     mpv
     torrserver
+    libgbm
   ];
 
   unpackPhase = ''
@@ -74,6 +76,14 @@ stdenv.mkDerivation rec {
         mkdir -p $out
         cp -r opt $out/opt
 
+        # Delete bundled video/media libraries that we resolve via Nixpkgs instead
+        rm -f $out/opt/nuvio/lib/libmpv.so* \
+              $out/opt/nuvio/lib/libass.so* \
+              $out/opt/nuvio/lib/libplacebo.so* \
+              $out/opt/nuvio/lib/libvulkan.so* \
+              $out/opt/nuvio/lib/libdav1d.so* \
+              $out/opt/nuvio/lib/libuchardet.so*
+
         # Create the custom wrapper script
         mkdir -p $out/bin
         cat > $out/bin/nuvio << EOF
@@ -84,7 +94,7 @@ stdenv.mkDerivation rec {
     ln -sf "${torrserver}/bin/torrserver" "\$RUNTIME_DIR/native/torrserver/torrserver"
 
     # Set up library path including OpenGL drivers for GPU acceleration
-    export LD_LIBRARY_PATH="/run/opengl-driver/lib:/run/opengl-driver-32/lib:${lib.makeLibraryPath [ mpv libGL libX11 libXext libXi libXrender libXtst libxkbcommon alsa-lib stdenv.cc.cc.lib ]}:\$LD_LIBRARY_PATH"
+    export LD_LIBRARY_PATH="/run/opengl-driver/lib:/run/opengl-driver-32/lib:${lib.makeLibraryPath [ mpv libGL libX11 libXext libXi libXrender libXtst libxkbcommon alsa-lib stdenv.cc.cc.lib libgbm ]}:\$LD_LIBRARY_PATH"
 
     # Set up hardware video acceleration driver paths for VA-API and VDPAU on NixOS
     export LIBVA_DRIVERS_PATH="/run/opengl-driver/lib/dri:\$LIBVA_DRIVERS_PATH"
@@ -96,15 +106,10 @@ stdenv.mkDerivation rec {
     EOF
         chmod +x $out/bin/nuvio
 
-        # Install desktop entry and icon
-        mkdir -p $out/share/applications
-        cp opt/nuvio/lib/nuvio-Nuvio.desktop $out/share/applications/nuvio.desktop
+        # Install desktop entry and icons
+        cp -r usr/share $out/share
         substituteInPlace $out/share/applications/nuvio.desktop \
-          --replace "Exec=/opt/nuvio/bin/Nuvio" "Exec=nuvio" \
-          --replace "Icon=/opt/nuvio/lib/Nuvio.png" "Icon=nuvio"
-
-        mkdir -p $out/share/pixmaps
-        cp opt/nuvio/lib/Nuvio.png $out/share/pixmaps/nuvio.png
+          --replace-fail "Exec=/opt/nuvio/bin/Nuvio" "Exec=nuvio"
 
         runHook postInstall
   '';
