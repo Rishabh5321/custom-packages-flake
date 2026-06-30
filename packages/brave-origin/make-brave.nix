@@ -1,76 +1,79 @@
-{ lib
-, stdenv
-, fetchurl
-, buildPackages
-, alsa-lib
-, at-spi2-atk
-, at-spi2-core
-, atk
-, cairo
-, cups
-, dbus
-, dpkg
-, expat
-, fontconfig
-, freetype
-, gdk-pixbuf
-, glib
-, adwaita-icon-theme
-, gsettings-desktop-schemas
-, gtk3
-, gtk4
-, qt6
-, libx11
-, libxscrnsaver
-, libxcomposite
-, libxcursor
-, libxdamage
-, libxext
-, libxfixes
-, libxi
-, libxrandr
-, libxrender
-, libxtst
-, libdrm
-, libkrb5
-, libuuid
-, libxkbcommon
-, libxshmfence
-, libgbm
-, nspr
-, nss
-, pango
-, pipewire
-, snappy
-, udev
-, wayland
-, xdg-utils
-, coreutils
-, libxcb
-, zlib
-, makeWrapper
-, # command line arguments which are always set e.g "--disable-gpu"
-  commandLineArgs ? ""
-, # Necessary for USB audio devices.
-  pulseSupport ? true
-, libpulseaudio
-, # For GPU acceleration support on Wayland (without the lib it doesn't seem to work)
-  libGL
-, # For video acceleration via VA-API (--enable-features=AcceleratedVideoDecodeLinuxGL,AcceleratedVideoEncoder)
-  libvaSupport ? true
-, libva
-, enableVideoAcceleration ? libvaSupport
-, # For Vulkan support (--enable-features=Vulkan); disabled by default as it seems to break VA-API
-  vulkanSupport ? false
-, addDriverRunpath
-, enableVulkan ? vulkanSupport
-,
+{
+  lib,
+  stdenv,
+  fetchurl,
+  buildPackages,
+  alsa-lib,
+  at-spi2-atk,
+  at-spi2-core,
+  atk,
+  cairo,
+  cups,
+  dbus,
+  dpkg,
+  expat,
+  fontconfig,
+  freetype,
+  gdk-pixbuf,
+  glib,
+  adwaita-icon-theme,
+  gsettings-desktop-schemas,
+  gtk3,
+  gtk4,
+  qt6,
+  libx11,
+  libxscrnsaver,
+  libxcomposite,
+  libxcursor,
+  libxdamage,
+  libxext,
+  libxfixes,
+  libxi,
+  libxrandr,
+  libxrender,
+  libxtst,
+  libdrm,
+  libkrb5,
+  libuuid,
+  libxkbcommon,
+  libxshmfence,
+  libgbm,
+  nspr,
+  nss,
+  pango,
+  pipewire,
+  snappy,
+  udev,
+  wayland,
+  xdg-utils,
+  coreutils,
+  libxcb,
+  zlib,
+  # command line arguments which are always set e.g "--disable-gpu"
+  commandLineArgs ? "",
+
+  # Necessary for USB audio devices.
+  pulseSupport ? true,
+  libpulseaudio,
+
+  # For GPU acceleration support on Wayland (without the lib it doesn't seem to work)
+  libGL,
+
+  # For video acceleration via VA-API (--enable-features=AcceleratedVideoDecodeLinuxGL,AcceleratedVideoEncoder)
+  libvaSupport ? true,
+  libva,
+  enableVideoAcceleration ? libvaSupport,
+
+  # For Vulkan support (--enable-features=Vulkan); disabled by default as it seems to break VA-API
+  vulkanSupport ? false,
+  addDriverRunpath,
+  enableVulkan ? vulkanSupport,
 }:
 
-{ pname
-, version
-, archives
-,
+{
+  pname,
+  version,
+  archives,
 }:
 
 let
@@ -85,7 +88,8 @@ let
     escapeShellArg
     ;
 
-  packagePath = pname;
+    packagePath = "brave-origin";
+  appName = "Brave Origin";
 
   deps = [
     alsa-lib
@@ -213,7 +217,7 @@ stdenv.mkDerivation {
 
     # Fix paths
     substituteInPlace $out/share/applications/{brave-origin,com.brave.Origin}.desktop \
-        --replace-fail /usr/bin/brave-origin $out/bin/brave-origin
+        --replace-fail /usr/bin/brave-origin-stable $out/bin/brave-origin
     substituteInPlace $out/share/gnome-control-center/default-apps/brave-origin.xml \
         --replace-fail /opt/brave.com $out/opt/brave.com
     substituteInPlace $out/opt/brave.com/${packagePath}/default-app-block \
@@ -269,10 +273,10 @@ stdenv.mkDerivation {
   passthru.updateScript = ./update.sh;
 
   meta = {
-    homepage = "https://brave.com/";
+    homepage = "https://brave.com/origin/download/";
     description = "Privacy-oriented browser for Desktop and Laptop computers";
     changelog =
-      "https://github.com/brave/brave-browser/blob/master/CHANGELOG_DESKTOP.md#"
+      "https://github.com/brave/brave-browser/blob/master/CHANGELOG_DESKTOP_ORIGIN.md#"
       + lib.replaceStrings [ "." ] [ "" ] version;
     longDescription = ''
       Brave browser blocks the ads and trackers that slow you down,
