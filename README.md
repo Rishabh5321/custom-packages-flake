@@ -7,6 +7,7 @@ A Nix flake containing custom packages for NixOS and Linux.
 | Package | Description |
 |---------|-------------|
 | `ab-download-manager` | A Download Manager that speeds up your downloads |
+| `altersend` | Private, peer-to-peer file transfer application |
 | `antigravity` | Google Antigravity — an internal Chrome/Electron-based development and onboarding tool |
 | `anymex` | Anime Streaming App |
 | `better-control` | Simple control panel for Linux based on GTK |
@@ -16,6 +17,7 @@ A Nix flake containing custom packages for NixOS and Linux.
 | `helium` | Helium browser a browser without chrome bloat |
 | `hydralauncher` | Open source game launcher |
 | `mangayomi` | Free and open source application for reading manga and watching anime |
+| `nuvio` | Nuvio Desktop client (unofficial builds with Linux fixes) |
 | `opera` | Opera Browser |
 | `playtorrio` | Stream torrents directly (Archived) |
 | `playtorrio-v2` | Stream torrents directly |
@@ -24,6 +26,8 @@ A Nix flake containing custom packages for NixOS and Linux.
 | `skystream` | Just a streaming app |
 | `sorayomi` | A free and open source manga reader for the desktop |
 | `stremio` | Open-source media player |
+| `stremio-enhanced` | Stremio with enhanced features |
+| `surge` | Open-source TUI Downloader |
 | `thorium-avx` | Thorium Browser (AVX optimized) |
 | `thorium-avx2` | Thorium Browser (AVX2 optimized) |
 | `thorium-sse3` | Thorium Browser (SSE3 optimized) |
