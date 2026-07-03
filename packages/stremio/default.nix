@@ -2,6 +2,8 @@
 , rustPlatform
 , fetchFromGitHub
 , versionCheckHook
+, gettext
+, glib
 , # buildInputs
   gtk4
 , glib-networking
@@ -10,6 +12,8 @@
 , libsoup_3
 , mpv
 , webkitgtk_6_0
+, librsvg
+, gst_all_1
 , # nativeBuildInputs
   pkg-config
 , wrapGAppsHook4
@@ -35,9 +39,17 @@ rustPlatform.buildRustPackage (finalAttrs: {
   cargoHash = "sha256-fI3HplELOl0EG8JIZYnPi9Nm0K1F7eA13gIsP3AKTjQ=";
 
   nativeBuildInputs = [
+    gettext
+    glib
     pkg-config
     wrapGAppsHook4
   ];
+
+  postPatch = ''
+    echo 'fn main() {}' > build.rs
+    substituteInPlace src/config.rs \
+      --replace-warn 'concat!(env!("CARGO_MANIFEST_DIR"), "/po")' "\"$out/share/locale\""
+  '';
 
   buildInputs = [
     gtk4
@@ -47,12 +59,29 @@ rustPlatform.buildRustPackage (finalAttrs: {
     libsoup_3
     mpv
     webkitgtk_6_0
+    librsvg
+    gst_all_1.gst-plugins-base
+    gst_all_1.gst-plugins-good
+    gst_all_1.gst-plugins-bad
+    gst_all_1.gst-plugins-ugly
+    gst_all_1.gst-libav
   ];
 
   postInstall = ''
     install -Dm644 data/com.stremio.Stremio.desktop $out/share/applications/com.stremio.Stremio.desktop
     install -Dm644 data/icons/com.stremio.Stremio.svg $out/share/icons/hicolor/scalable/apps/com.stremio.Stremio.svg
     install -Dm644 data/server.js $out/share/stremio/server.js
+
+    # Install schemas
+    install -Dm644 data/com.stremio.Stremio.gschema.xml $out/share/glib-2.0/schemas/com.stremio.Stremio.gschema.xml
+    glib-compile-schemas $out/share/glib-2.0/schemas
+
+    # Install translations
+    for po in po/*.po; do
+      lang=$(basename $po .po)
+      mkdir -p $out/share/locale/$lang/LC_MESSAGES
+      msgfmt -o $out/share/locale/$lang/LC_MESSAGES/stremio.mo $po
+    done
 
     mv $out/bin/stremio-linux-shell $out/bin/stremio
   '';
@@ -62,7 +91,8 @@ rustPlatform.buildRustPackage (finalAttrs: {
   preFixup = ''
     gappsWrapperArgs+=(
       --prefix PATH : "${lib.makeBinPath [ nodejs ]}" \
-      --prefix SERVER_PATH : "$out/share/stremio/server.js"
+      --prefix SERVER_PATH : "$out/share/stremio/server.js" \
+      --set LC_NUMERIC C
     )
   '';
 
