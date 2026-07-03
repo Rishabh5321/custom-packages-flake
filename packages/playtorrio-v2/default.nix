@@ -21,13 +21,13 @@
 
 flutter.buildFlutterApplication (finalAttrs: {
   pname = "playtorrio-v2";
-  version = "1.3.9";
+  version = "1.4.0";
 
   src = fetchFromGitHub {
     owner = "ayman708-UX";
     repo = "PlayTorrioV2";
     tag = "v${finalAttrs.version}";
-    hash = "sha256-YowGZPFhpdbjtH8rufAJbniCSdJmyfvuU1nps/FmYpo=";
+    hash = "sha256-h+K6wADuzRvQ1cs6Z4cVoeBG509vG1EN4Aa/EhyC0HE=";
   };
 
   inherit targetFlutterPlatform;
@@ -40,7 +40,7 @@ flutter.buildFlutterApplication (finalAttrs: {
 
   pubspecLock = lib.importJSON ./pubspec.lock.json;
 
-  # gitHashes = lib.importJSON ./git-hashes.json;
+  gitHashes = lib.importJSON ./git-hashes.json;
 
   nativeBuildInputs = [ pkg-config autoPatchelfHook makeWrapper ] ++ lib.optionals (targetFlutterPlatform == "linux") [
     copyDesktopItems

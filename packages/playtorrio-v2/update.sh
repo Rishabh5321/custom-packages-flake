@@ -62,7 +62,7 @@ while ! test -f flake.nix; do cd ..; done
 FLAKE_DIR="$PWD"
 cd "$TEMP_CD"
 
-FETCH_SCRIPT=$(nix eval --raw ".#fladder.passthru.dart.fetchGitHashesScript" 2>/dev/null || true)
+FETCH_SCRIPT=$(nix eval --raw "nixpkgs#dart.fetchGitHashesScript" 2>/dev/null || true)
 if [[ -n "$FETCH_SCRIPT" ]]; then
     $FETCH_SCRIPT --input "$PACKAGE_DIR"/pubspec.lock.json --output "$PACKAGE_DIR"/git-hashes.json
     echo "Generated git-hashes.json"

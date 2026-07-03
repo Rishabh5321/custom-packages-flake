@@ -1,0 +1,10 @@
+{
+  "media_kit": "sha256-jMUmvlSz71pixRO+t8WcHbQIiSumZmPVakEL5L8YlV4=",
+  "media_kit_libs_android_video": "sha256-jMUmvlSz71pixRO+t8WcHbQIiSumZmPVakEL5L8YlV4=",
+  "media_kit_libs_ios_video": "sha256-jMUmvlSz71pixRO+t8WcHbQIiSumZmPVakEL5L8YlV4=",
+  "media_kit_libs_linux": "sha256-jMUmvlSz71pixRO+t8WcHbQIiSumZmPVakEL5L8YlV4=",
+  "media_kit_libs_macos_video": "sha256-jMUmvlSz71pixRO+t8WcHbQIiSumZmPVakEL5L8YlV4=",
+  "media_kit_libs_video": "sha256-jMUmvlSz71pixRO+t8WcHbQIiSumZmPVakEL5L8YlV4=",
+  "media_kit_libs_windows_video": "sha256-jMUmvlSz71pixRO+t8WcHbQIiSumZmPVakEL5L8YlV4=",
+  "media_kit_video": "sha256-jMUmvlSz71pixRO+t8WcHbQIiSumZmPVakEL5L8YlV4="
+}
