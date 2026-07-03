@@ -40,7 +40,7 @@ flutter.buildFlutterApplication (finalAttrs: {
 
   pubspecLock = lib.importJSON ./pubspec.lock.json;
 
-  # gitHashes = lib.importJSON ./git-hashes.json;
+  gitHashes = lib.importJSON ./git-hashes.json;
 
   nativeBuildInputs = [ pkg-config autoPatchelfHook makeWrapper ] ++ lib.optionals (targetFlutterPlatform == "linux") [
     copyDesktopItems
