@@ -28,11 +28,11 @@
 
 stdenv.mkDerivation rec {
   pname = "shonenx";
-  version = "2.0.6";
+  version = "2.0.7";
 
   src = fetchurl {
     url = "https://github.com/roshancodespace/ShonenX/releases/download/v${version}/ShonenX-Linux.zip";
-    sha256 = "0q5qph35vj56i56p4n6c0rvc8gvx7k7vk7vdgmwnzdyr9i20x4p7";
+    sha256 = "0jhca0ywa7jmxj2fr35nkd7b589zxilsmwjv407zfcgx8w1g7a68";
   };
 
   nativeBuildInputs = [
