@@ -71,52 +71,52 @@ stdenv.mkDerivation rec {
   '';
 
   installPhase = ''
-    runHook preInstall
+        runHook preInstall
 
-    mkdir -p $out
-    cp -r opt $out/opt
+        mkdir -p $out
+        cp -r opt $out/opt
 
-    # Delete bundled video/media libraries that we resolve via Nixpkgs instead
-    rm -f $out/opt/nuvio/lib/libmpv.so* \
-          $out/opt/nuvio/lib/libass.so* \
-          $out/opt/nuvio/lib/libplacebo.so* \
-          $out/opt/nuvio/lib/libvulkan.so* \
-          $out/opt/nuvio/lib/libdav1d.so* \
-          $out/opt/nuvio/lib/libuchardet.so*
+        # Delete bundled video/media libraries that we resolve via Nixpkgs instead
+        rm -f $out/opt/nuvio/lib/libmpv.so* \
+              $out/opt/nuvio/lib/libass.so* \
+              $out/opt/nuvio/lib/libplacebo.so* \
+              $out/opt/nuvio/lib/libvulkan.so* \
+              $out/opt/nuvio/lib/libdav1d.so* \
+              $out/opt/nuvio/lib/libuchardet.so*
 
-    # Create the custom wrapper script
-    mkdir -p $out/bin
-    cat > $out/bin/nuvio << EOF
-#!/usr/bin/env bash
-# Create runtime directory for TorrServer
-RUNTIME_DIR="\$HOME/.local/share/nuvio-runtime"
-mkdir -p "\$RUNTIME_DIR/native/torrserver"
-ln -sf "${torrserver}/bin/torrserver" "\$RUNTIME_DIR/native/torrserver/torrserver"
+        # Create the custom wrapper script
+        mkdir -p $out/bin
+        cat > $out/bin/nuvio << EOF
+    #!/usr/bin/env bash
+    # Create runtime directory for TorrServer
+    RUNTIME_DIR="\$HOME/.local/share/nuvio-runtime"
+    mkdir -p "\$RUNTIME_DIR/native/torrserver"
+    ln -sf "${torrserver}/bin/torrserver" "\$RUNTIME_DIR/native/torrserver/torrserver"
 
-# Set up library path including OpenGL drivers for GPU acceleration
-export LD_LIBRARY_PATH="/run/opengl-driver/lib:/run/opengl-driver-32/lib:${lib.makeLibraryPath [ mpv libGL libX11 libXext libXi libXrender libXtst libxkbcommon alsa-lib stdenv.cc.cc.lib libgbm ]}:\$LD_LIBRARY_PATH"
+    # Set up library path including OpenGL drivers for GPU acceleration
+    export LD_LIBRARY_PATH="/run/opengl-driver/lib:/run/opengl-driver-32/lib:${lib.makeLibraryPath [ mpv libGL libX11 libXext libXi libXrender libXtst libxkbcommon alsa-lib stdenv.cc.cc.lib libgbm ]}:\$LD_LIBRARY_PATH"
 
-# Set up hardware video acceleration driver paths for VA-API and VDPAU on NixOS
-export LIBVA_DRIVERS_PATH="/run/opengl-driver/lib/dri:\$LIBVA_DRIVERS_PATH"
-export VDPAU_DRIVER_PATH="/run/opengl-driver/lib/vdpau:\$VDPAU_DRIVER_PATH"
+    # Set up hardware video acceleration driver paths for VA-API and VDPAU on NixOS
+    export LIBVA_DRIVERS_PATH="/run/opengl-driver/lib/dri:\$LIBVA_DRIVERS_PATH"
+    export VDPAU_DRIVER_PATH="/run/opengl-driver/lib/vdpau:\$VDPAU_DRIVER_PATH"
 
-# Run Nuvio from the runtime directory so it detects native/torrserver/torrserver
-cd "\$RUNTIME_DIR"
-exec "$out/opt/nuvio/bin/Nuvio" "\$@"
-EOF
-    chmod +x $out/bin/nuvio
+    # Run Nuvio from the runtime directory so it detects native/torrserver/torrserver
+    cd "\$RUNTIME_DIR"
+    exec "$out/opt/nuvio/bin/Nuvio" "\$@"
+    EOF
+        chmod +x $out/bin/nuvio
 
-    # Install desktop entry and icons
-    mkdir -p $out/share/applications $out/share/pixmaps
-    cp opt/nuvio/lib/nuvio-Nuvio.desktop $out/share/applications/nuvio.desktop
-    cp opt/nuvio/lib/Nuvio.png $out/share/pixmaps/nuvio.png
+        # Install desktop entry and icons
+        mkdir -p $out/share/applications $out/share/pixmaps
+        cp opt/nuvio/lib/nuvio-Nuvio.desktop $out/share/applications/nuvio.desktop
+        cp opt/nuvio/lib/Nuvio.png $out/share/pixmaps/nuvio.png
 
-    substituteInPlace $out/share/applications/nuvio.desktop \
-      --replace-warn "Exec=/opt/nuvio/bin/Nuvio" "Exec=nuvio" \
-      --replace-warn "Icon=/opt/nuvio/lib/Nuvio.png" "Icon=nuvio" \
-      --replace-warn "Icon=Nuvio" "Icon=nuvio"
+        substituteInPlace $out/share/applications/nuvio.desktop \
+          --replace-warn "Exec=/opt/nuvio/bin/Nuvio" "Exec=nuvio" \
+          --replace-warn "Icon=/opt/nuvio/lib/Nuvio.png" "Icon=nuvio" \
+          --replace-warn "Icon=Nuvio" "Icon=nuvio"
 
-    runHook postInstall
+        runHook postInstall
   '';
 
   meta = with lib; {
