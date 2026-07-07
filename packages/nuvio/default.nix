@@ -28,12 +28,12 @@
 
 stdenv.mkDerivation rec {
   pname = "nuvio";
-  version = "0.1.9-alpha";
-  tag = "0.1.9-alpha";
+  version = "0.1.10-alpha";
+  tag = "0.1.10-alpha";
 
   src = fetchurl {
-    url = "https://github.com/aelrased/NuvioDesktop/releases/download/${tag}/Nuvio-${version}_amd64.deb";
-    hash = "sha256-4Z+XjOp9ggQ21pRlDgPwioLSPyJqplsTUtLamdaaHbY=";
+    url = "https://github.com/aelrased/NuvioDesktop/releases/download/${tag}/nuvio_${version}_amd64.deb";
+    hash = "sha256-S+BD4pXAwK4kT9Z1G5K4sLqKbOk8L9rkCSYaca0yD60=";
   };
 
   nativeBuildInputs = [
