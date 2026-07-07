@@ -24,6 +24,7 @@
 , gst_all_1
 , libglvnd
 , jdk
+, libxv
 }:
 
 stdenv.mkDerivation rec {
@@ -64,6 +65,7 @@ stdenv.mkDerivation rec {
     gst_all_1.gst-plugins-bad
     libglvnd
     jdk
+    libxv
   ];
 
   autoPatchelfIgnoreMissingDeps = [
