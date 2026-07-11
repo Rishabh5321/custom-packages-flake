@@ -14,14 +14,11 @@ appimageTools.wrapType2 {
   inherit pname version src;
 
   extraInstallCommands = ''
-    mv $out/bin/${pname}-${version} $out/bin/${pname} || true
-
-    install -m 444 -D ${appimageContents}/@altersenddesktop.desktop $out/share/applications/altersend.desktop
+    install -m 444 -D ${appimageContents}/altersend.desktop $out/share/applications/altersend.desktop
     substituteInPlace $out/share/applications/altersend.desktop \
-      --replace-fail 'Exec=AppRun' 'Exec=${pname}' \
-      --replace-fail 'Icon=@altersenddesktop' 'Icon=${pname}'
+      --replace-fail 'Exec=AppRun --no-sandbox %U' 'Exec=${pname} %U'
 
-    install -m 444 -D ${appimageContents}/@altersenddesktop.png \
+    install -m 444 -D ${appimageContents}/altersend.png \
       $out/share/icons/hicolor/1024x1024/apps/altersend.png
   '';
 
