@@ -12,7 +12,7 @@ RELEASES=$(gh api repos/denislupookov/altersend/releases)
 
 LATEST_TAG=$(echo "$RELEASES" | jq -r '[.[] | select(.prerelease == false and .draft == false)][0].tag_name')
 LATEST_VERSION=$(echo "$LATEST_TAG" | sed 's/^v//')
-LATEST_APPIMAGE_NAME=$(echo "$RELEASES" | jq -r '[.[] | select(.prerelease == false and .draft == false)][0].assets[] | select(.name | endswith(".AppImage")) | .name')
+LATEST_APPIMAGE_NAME=$(echo "$RELEASES" | jq -r '[.[] | select(.prerelease == false and .draft == false)][0].assets[] | select(.name | endswith(".AppImage") and contains("x86_64")) | .name')
 
 if [ -z "$LATEST_VERSION" ] || [ "$LATEST_VERSION" == "null" ]; then
     echo "Could not extract valid release tag."
