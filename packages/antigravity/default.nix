@@ -38,12 +38,13 @@
 }:
 stdenv.mkDerivation (finalAttrs: {
   pname = "antigravity";
-  version = "2.1.1-6123990880747520";
+  version = "2.3.1-5358163105546240";
 
-  # https://edgedl.me.gvt1.com/edgedl/release2/j0qc3/antigravity/stable/1.13.3-4533425205018624/linux-x64/Antigravity.tar.gz
   src = fetchurl {
-    url = "https://edgedl.me.gvt1.com/edgedl/release2/j0qc3/antigravity/stable/${finalAttrs.version}/linux-x64/${if lib.versionAtLeast finalAttrs.version "2.0.0" then "Antigravity%20IDE.tar.gz" else "Antigravity.tar.gz"}";
-    hash = "sha256-Wyzr99M6aNAD/Y8fqYjRYAkFrOIlBKCF5ThCFCkIeL0=";
+    url = if lib.versionAtLeast finalAttrs.version "2.3.0"
+          then "https://storage.googleapis.com/antigravity-public/antigravity-hub/${finalAttrs.version}/linux-x64/Antigravity.tar.gz"
+          else "https://edgedl.me.gvt1.com/edgedl/release2/j0qc3/antigravity/stable/${finalAttrs.version}/linux-x64/${if lib.versionAtLeast finalAttrs.version "2.0.0" then "Antigravity%20IDE.tar.gz" else "Antigravity.tar.gz"}";
+    hash = "sha256-ehmSFJ45bswS56QrFVY4lYcB2qplvtB83P5jm4Jnx0U=";
   };
 
   nativeBuildInputs = [
@@ -96,7 +97,7 @@ stdenv.mkDerivation (finalAttrs: {
     })
   ];
 
-  sourceRoot = if lib.versionAtLeast finalAttrs.version "2.0.0" then "Antigravity IDE" else ".";
+  sourceRoot = if lib.versionAtLeast finalAttrs.version "2.3.0" then "Antigravity-x64" else if lib.versionAtLeast finalAttrs.version "2.0.0" then "Antigravity IDE" else ".";
 
   installPhase = ''
     runHook preInstall
@@ -104,10 +105,12 @@ stdenv.mkDerivation (finalAttrs: {
     mkdir -p $out/share/antigravity
     cp -r * $out/share/antigravity
 
-    install -Dm0644 $out/share/antigravity/resources/app/resources/linux/code.png $out/share/pixmaps/antigravity.png
+    if [ -f $out/share/antigravity/resources/app/resources/linux/code.png ]; then
+      install -Dm0644 $out/share/antigravity/resources/app/resources/linux/code.png $out/share/pixmaps/antigravity.png
+    fi
 
     mkdir -p $out/bin
-    makeWrapper $out/share/antigravity/${if lib.versionAtLeast finalAttrs.version "2.0.0" then "antigravity-ide" else "antigravity"} $out/bin/antigravity \
+    makeWrapper $out/share/antigravity/${if lib.versionAtLeast finalAttrs.version "2.3.0" then "antigravity" else if lib.versionAtLeast finalAttrs.version "2.0.0" then "antigravity-ide" else "antigravity"} $out/bin/antigravity \
       --set ELECTRON_OZONE_PLATFORM_HINT auto \
       --add-flags "--enable-features=UseOzonePlatform --ozone-platform-hint=auto --enable-wayland-ime" \
       --unset NODE_OPTIONS \

@@ -16,10 +16,8 @@ fi
 # Check latest version
 echo "Checking latest version"
 latest_url=$(
-  curl -sL --compressed https://antigravity.google/ \
-  | grep -Eo 'main-[^"]+\.js' | head -n1 \
-  | xargs -I{} curl -sL --compressed https://antigravity.google/{} \
-  | grep -oE "https://edgedl[^\"']+linux-x64[^\"']+" | head -n1
+  curl -sL --compressed https://antigravity.google/download \
+  | grep -oE "https://storage.googleapis.com[^\"]+linux-x64[^\"]+" | head -n1
 )
 latest_rev=$(echo "$latest_url" | grep -oE "[0-9]+\.[0-9]+\.[0-9]+-[0-9]+")
 echo "Latest commit: $latest_rev"
