@@ -6,8 +6,8 @@ set -e
 # 1. Fetch current versions/URLs from default.nix
 FILE="packages/stremio-enhanced/default.nix"
 CURRENT_VERSION=$(grep -oP 'version\s*=\s*"\K[^"]+' "$FILE" || echo "0.0.0")
-CURRENT_SERVER_URL=$(sed -n '/serverJs = fetchurl [{]/,/[}]/p' "$FILE" | grep -oP 'url\s*=\s*"\K[^"]+')
-CURRENT_PLUGIN_URL=$(sed -n '/autoExternalPlayerPlugin = fetchurl [{]/,/[}]/p' "$FILE" | grep -oP 'url\s*=\s*"\K[^"]+')
+CURRENT_SERVER_URL=$(sed -n '/serverJs = fetchurl [{]/,/[}]/p' "$FILE" | grep -oP 'url\s*=\s*"\K[^"]+' || true)
+CURRENT_PLUGIN_URL=$(sed -n '/autoExternalPlayerPlugin = fetchurl [{]/,/[}]/p' "$FILE" | grep -oP 'url\s*=\s*"\K[^"]+' || true)
 
 echo "Current Stremio-Enhanced version: $CURRENT_VERSION"
 echo "Current server.js URL:           $CURRENT_SERVER_URL"
@@ -25,14 +25,14 @@ if [ -z "$LATEST_VERSION" ] || [ "$LATEST_VERSION" == "null" ]; then
 fi
 echo "Latest Stremio-Enhanced version: $LATEST_VERSION"
 
-# 3. Fetch latest Stremio server.js version and construct URL
-echo "Fetching latest server.js version from Stremio/stremio-service..."
-SERVER_VERSION=$(curl -sL https://raw.githubusercontent.com/Stremio/stremio-service/master/Cargo.toml | grep -A 1 '\[package.metadata.server\]' | grep 'version =' | cut -d'"' -f2)
-if [ -z "$SERVER_VERSION" ]; then
-    echo "Failed to extract server.js version."
+# 3. Fetch latest Stremio server.js from stremio-linux-shell
+echo "Fetching latest server.js commit from Stremio/stremio-linux-shell..."
+SERVER_COMMIT=$(curl -sL https://api.github.com/repos/Stremio/stremio-linux-shell/commits?path=data/server.js | jq -r '.[0].sha')
+if [ -z "$SERVER_COMMIT" ] || [ "$SERVER_COMMIT" == "null" ]; then
+    echo "Failed to extract server.js commit."
     exit 1
 fi
-LATEST_SERVER_URL="https://dl.strem.io/server/${SERVER_VERSION}/desktop/server.js"
+LATEST_SERVER_URL="https://raw.githubusercontent.com/Stremio/stremio-linux-shell/${SERVER_COMMIT}/data/server.js"
 echo "Latest server.js URL:            $LATEST_SERVER_URL"
 
 # 4. Fetch latest auto-external-player.plugin.js Gist URL

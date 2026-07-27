@@ -14,12 +14,8 @@ let
   };
   appimageContents = appimageTools.extract { inherit pname version src; };
   serverJs = fetchurl {
-    url = "https://dl.strem.io/server/v4.20.17/desktop/server.js";
-    hash = "sha256-Vno5e7EbeIVxvxdQ/QXdeJJ/l77Ayd3qptnMHszuOSI=";
-  };
-  autoExternalPlayerPlugin = fetchurl {
-    url = "https://gist.githubusercontent.com/AJV009/5e53080b453f9deafb0d250fbc2e8666/raw/060cf68cb8b921fe934cfe455cf890ec8acf8b01/auto-external-player.plugin.js";
-    hash = "sha256-TyMchiMK6abumqEHw8p7+9oSq7cq1qD1rkNKGFdP9nQ=";
+    url = "https://raw.githubusercontent.com/Stremio/stremio-linux-shell/9d5ea7dc054487ec1db4fa476fafb6aa08017813/data/server.js";
+    hash = "sha256-ghddeYK86GTfBx35O0s9VnpAHmWIGorFedfbDOcdr9c=";
   };
 in
 appimageTools.wrapType2 {
@@ -47,14 +43,11 @@ appimageTools.wrapType2 {
 
     install -m 444 -D ${serverJs} \
       $out/share/${pname}/streamingserver/server.js
-    install -m 444 -D ${autoExternalPlayerPlugin} \
-      $out/share/${pname}/plugins/auto-external-player.plugin.js
 
     wrapProgram $out/bin/${pname} \
       --run 'mkdir -p "$HOME/.config/stremio-enhanced/streamingserver"' \
       --run 'test -f "$HOME/.config/stremio-enhanced/streamingserver/server.js" || cp '"${serverJs}"' "$HOME/.config/stremio-enhanced/streamingserver/server.js"' \
-      --run 'mkdir -p "$HOME/.config/stremio-enhanced/plugins"' \
-      --run 'test -f "$HOME/.config/stremio-enhanced/plugins/auto-external-player.plugin.js" || cp '"${autoExternalPlayerPlugin}"' "$HOME/.config/stremio-enhanced/plugins/auto-external-player.plugin.js"'
+      --run 'mkdir -p "$HOME/.config/stremio-enhanced/plugins"'
   '';
 
   meta = with lib; {
