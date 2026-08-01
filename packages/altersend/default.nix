@@ -1,12 +1,12 @@
 { appimageTools, fetchurl, lib }:
 let
   pname = "altersend";
-  version = "1.7.0";
+  version = "1.8.0";
   appimageName = "AlterSend-x86_64.AppImage";
   src = fetchurl {
     name = "${pname}-${version}.AppImage";
     url = "https://github.com/denislupookov/altersend/releases/download/v${version}/${appimageName}";
-    hash = "sha256-UtckUQP4qPLgXta2KjnRkwPGi/Rdaq2we8ersrd8I+Q=";
+    hash = "sha256-K0Ka7a17+Wqmk9VEcVv8WC8ckP3kfotQOqm4FX1hNlY=";
   };
   appimageContents = appimageTools.extract { inherit pname version src; };
 in
