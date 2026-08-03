@@ -49,11 +49,11 @@ let
 in
 stdenv.mkDerivation rec {
   pname = "skystream";
-  version = "2.5.0";
+  version = "2.7.6";
 
   src = fetchurl {
     url = "https://github.com/akashdh11/skystream/releases/download/v${version}/skystream-linux-x64-v${version}.tar.gz";
-    hash = "sha256-ZN8gEmAOYUQofxFQhMrHSbp9Flqu2RqFsPuGKOGbElE=";
+    hash = "sha256-+xW/20MbF9Sn1pCxU9BlglBTeSIqAjc4dirvJ3SE2ro=";
   };
 
   nativeBuildInputs = [
