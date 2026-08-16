@@ -23,6 +23,6 @@ rec {
   opera = pkgs.callPackage ./opera/default.nix { };
   skystream = pkgs.callPackage ./skystream/default.nix { };
   surge = pkgs.callPackage ./surge/default.nix { };
-
+  zcode = pkgs.callPackage ./zcode/default.nix { };
 
 } // (import ./thorium/default.nix { inherit pkgs; })
