@@ -22,11 +22,11 @@
 
 stdenv.mkDerivation rec {
   pname = "ab-download-manager";
-  version = "1.10.1";
+  version = "1.10.2";
 
   src = fetchurl {
     url = "https://github.com/amir1376/ab-download-manager/releases/download/v${version}/ABDownloadManager_${version}_linux_x64.tar.gz";
-    sha256 = "sha256-2q5TLfwHIx2uAvzjcaZrUObB70ypSnBbs7XyuZaCXuc=";
+    sha256 = "sha256-xhwDnsQm3wC188/P0Htk7GKgw1x4vsvFYtRgDVpeqcQ=";
   };
 
   nativeBuildInputs = [
