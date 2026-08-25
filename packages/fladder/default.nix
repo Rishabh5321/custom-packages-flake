@@ -20,13 +20,13 @@ in
 
 flutter.buildFlutterApplication (finalAttrs: {
   pname = "fladder";
-  version = "0.10.3";
+  version = "0.11.0";
 
   src = fetchFromGitHub {
     owner = "DonutWare";
     repo = "Fladder";
     tag = "v${finalAttrs.version}";
-    hash = "sha256-0eFHylRi2UVaKRG7K3tDZVscgoiL5xFrtFhZiJxj4Mk=";
+    hash = "sha256-89oOFvwA4Wcl6ODiNwwCRO4tic+5u6bRzHkfCl+twtI=";
   };
 
   inherit targetFlutterPlatform;
