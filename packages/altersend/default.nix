@@ -16,7 +16,7 @@ appimageTools.wrapType2 {
   extraInstallCommands = ''
     install -m 444 -D ${appimageContents}/altersend.desktop $out/share/applications/altersend.desktop
     substituteInPlace $out/share/applications/altersend.desktop \
-      --replace-fail 'Exec=AppRun --no-sandbox %U' 'Exec=${pname} %U'
+      --replace-fail 'Exec=AppRun %U' 'Exec=${pname} %U'
 
     install -m 444 -D ${appimageContents}/altersend.png \
       $out/share/icons/hicolor/1024x1024/apps/altersend.png
