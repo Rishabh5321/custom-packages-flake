@@ -6,5 +6,6 @@
     "media_kit_libs_macos_video": "sha256-wQ5HOztwfJRymo+GzgTgHcRS/rzJfZcvBul5teSf/h8=",
     "media_kit_libs_video": "sha256-wQ5HOztwfJRymo+GzgTgHcRS/rzJfZcvBul5teSf/h8=",
     "media_kit_libs_windows_video": "sha256-wQ5HOztwfJRymo+GzgTgHcRS/rzJfZcvBul5teSf/h8=",
-    "media_kit_video": "sha256-wQ5HOztwfJRymo+GzgTgHcRS/rzJfZcvBul5teSf/h8="
+    "media_kit_video": "sha256-wQ5HOztwfJRymo+GzgTgHcRS/rzJfZcvBul5teSf/h8=",
+    "pip": "sha256-u6Yl5ejxAuVuFMO0XXYjLVC4iYx6PBJyctNVedFr42E="
 }

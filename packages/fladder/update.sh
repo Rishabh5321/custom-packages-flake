@@ -34,13 +34,21 @@ sed -i -E "s@(hash\s*=\s*\")[^\"]+@\1${NEW_SRC_HASH}@" "$PACKAGE_DIR"/default.ni
 # Update pubspec.lock.json
 curl --fail --silent "https://raw.githubusercontent.com/DonutWare/Fladder/v${latestVersion}/pubspec.lock" | yq eval --output-format=json --prettyPrint >"$PACKAGE_DIR"/pubspec.lock.json
 
-# Update git-hashes.json (only if dart.fetchGitHashesScript is available)
-FETCH_SCRIPT=$(nix eval --raw ".#fladder.passthru.dart.fetchGitHashesScript" 2>/dev/null || true)
-if [[ -n "$FETCH_SCRIPT" ]]; then
-    $FETCH_SCRIPT --input "$PACKAGE_DIR"/pubspec.lock.json --output "$PACKAGE_DIR"/git-hashes.json
-else
-    echo "Warning: Could not find dart.fetchGitHashesScript, git-hashes.json not updated"
-fi
+# Update git-hashes.json
+echo "Updating git-hashes.json"
+echo "{}" > "$PACKAGE_DIR"/git-hashes.json
+jq -r '.packages | to_entries[] | select(.value.source == "git") | "\(.key) \(.value.description.url) \(.value.description["resolved-ref"])"' "$PACKAGE_DIR"/pubspec.lock.json | while read -r pkg url ref; do
+    if [[ "$url" == "https://github.com/"* ]]; then
+        repo_path="${url#https://github.com/}"
+        repo_path="${repo_path%.git}"
+        archive_url="https://github.com/${repo_path}/archive/${ref}.tar.gz"
+        hash=$(nix-prefetch-url --unpack "$archive_url" 2>/dev/null | xargs nix hash convert --hash-algo sha256 --to sri)
+        jq ".[\"$pkg\"] = \"$hash\"" "$PACKAGE_DIR"/git-hashes.json > "$PACKAGE_DIR"/git-hashes.tmp.json
+        mv "$PACKAGE_DIR"/git-hashes.tmp.json "$PACKAGE_DIR"/git-hashes.json
+    else
+        echo "Warning: Unsupported git URL $url for package $pkg"
+    fi
+done
 
 if [ -n "${GITHUB_ENV:-}" ]; then
     echo "UPDATE_DETECTED=true" >> "$GITHUB_ENV"
