@@ -19,7 +19,6 @@ rec {
   stremio-enhanced = pkgs.callPackage ./stremio-enhanced/default.nix { };
   helium = pkgs.callPackage ./helium/default.nix { };
   hydralauncher = pkgs.callPackage ./hydralauncher/default.nix { };
-  shonenx = pkgs.callPackage ./shonenx/default.nix { };
   opera = pkgs.callPackage ./opera/default.nix { };
   skystream = pkgs.callPackage ./skystream/default.nix { };
   surge = pkgs.callPackage ./surge/default.nix { };
