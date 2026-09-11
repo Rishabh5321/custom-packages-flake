@@ -71,7 +71,7 @@ flutter.buildFlutterApplication (finalAttrs: {
       name = "fladder";
       desktopName = "Fladder";
       genericName = "Jellyfin Client";
-      exec = "Fladder";
+      exec = "fladder";
       icon = "fladder";
       comment = "Simple Jellyfin Frontend built on top of Flutter";
       categories = [
@@ -91,6 +91,6 @@ flutter.buildFlutterApplication (finalAttrs: {
     license = lib.licenses.gpl3Only;
     maintainers = with lib.maintainers; [
     ];
-    mainProgram = "Fladder";
+    mainProgram = "fladder";
   };
 })
