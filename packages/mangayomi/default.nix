@@ -1,11 +1,11 @@
 { appimageTools, fetchurl }:
 let
   pname = "mangayomi";
-  version = "0.9.3";
+  version = "0.9.4";
   src = fetchurl {
     name = "${pname}-${version}.AppImage";
     url = "https://github.com/kodjodevf/mangayomi/releases/download/v${version}/Mangayomi-v${version}-linux.AppImage";
-    sha256 = "sha256-UJ3GkylP2d3A3tk7+FODoGHSZHeCawnAvM+a65wqs0E=";
+    sha256 = "sha256-+EBMRLP2PRTucwkPE2We+OTnaYM9AiGPxfHZdHEodZ8=";
   };
   appimageContents = appimageTools.extract { inherit pname version src; };
 in
