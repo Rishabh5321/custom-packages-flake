@@ -5,16 +5,16 @@
 
 buildGoModule rec {
   pname = "surge";
-  version = "0.12.1";
+  version = "ext-v2.1.3";
 
   src = fetchFromGitHub {
     owner = "SurgeDM";
     repo = "surge";
     rev = "v${version}";
-    hash = "sha256-cUJwt4gRdlQvMnrEvYG7JZe/2oz4cN9k35TEur13Sks=";
+    hash = "sha256-HoNiHYH9LVJxF9ZXbjWST/6TXREjmCnt1NV9dDpKrxw=";
   };
 
-  vendorHash = "sha256-Ei2i7dQ9s42Gg6f2iLABbTG7OQspjHoRnqIhkfcNvFo=";
+  vendorHash = "sha256-5rlDAhs3KXq00X5NE8RGAyiS6A6TFE6j/ngYaolaY94=";
 
   preCheck = ''
     export HOME=$(mktemp -d)
