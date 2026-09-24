@@ -7,8 +7,8 @@ OWNER="SurgeDM"
 REPO="surge"
 NIX_FILE="packages/$PACKAGE/default.nix"
 
-# Fetch latest release version
-LATEST_TAG=$(curl -s "https://api.github.com/repos/$OWNER/$REPO/releases/latest" | jq -r .tag_name)
+# Fetch latest release version, ignoring extension releases (tagged with ext-)
+LATEST_TAG=$(curl -s "https://api.github.com/repos/$OWNER/$REPO/releases" | jq -r '[.[] | select(.tag_name | startswith("ext-") | not)][0].tag_name')
 LATEST_VERSION=${LATEST_TAG#v}
 
 CURRENT_VERSION=$(grep 'version =' "$NIX_FILE" | cut -d '"' -f 2)
