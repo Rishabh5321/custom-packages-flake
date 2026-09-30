@@ -44,19 +44,21 @@
 ,
 }:
 let
-  version = "18";
+  version = "19";
   src = fetchFromGitLab {
     domain = "gitlab.futo.org";
     owner = "videostreaming";
     repo = "Grayjay.Desktop";
     tag = version;
-    hash = "sha256-dhXUjj9x8v1bfHLPxNtcysj/eKeT3kkSeVuX6PKoykE=";
+    hash = "sha256-R3fil6hp1Qqx5WwtF220GfpwJjpA7nAMU/2iWNKBo6g=";
     fetchSubmodules = true;
     fetchLFS = true;
   };
+  justCefVersion = "13";
+  justCefUrl = "https://static.grayjay.app/justcef/${justCefVersion}/JustCefNative-linux-x64.zip";
   justCefNative = fetchurl {
-    url = "https://static.grayjay.app/justcef/1/JustCefNative-linux-x64.zip";
-    hash = "sha256-LXOp+QZZcWBd8eP+BpK++AMBo9303+aIDEEYNVWekhE=";
+    url = justCefUrl;
+    hash = "sha256-xO2as/wVtoSUY8QK2RHtXchCjy6PfdWDKc7+2lGwTd8=";
   };
   frontend = buildNpmPackage {
     pname = "grayjay-frontend";
@@ -119,7 +121,7 @@ buildDotnetModule (finalAttrs: {
     "Grayjay.Engine/Grayjay.Engine/Grayjay.Engine.csproj"
     "Grayjay.Desktop.CEF/Grayjay.Desktop.CEF.csproj"
     "FUTO.MDNS/FUTO.MDNS/FUTO.MDNS.csproj"
-    "JustCef/JustCef.csproj"
+    "JustCef/cs/JustCef.csproj"
   ];
 
   testProjectFile = [
@@ -147,7 +149,7 @@ buildDotnetModule (finalAttrs: {
     cp -r ${frontend} Grayjay.ClientServer/wwwroot/web
 
     # Pre-populate JustCef native cache to avoid network download during build
-    justcef_cache="JustCef/obj/justcef/net8.0/1/linux-x64"
+    justcef_cache="JustCef/cs/obj/justcef/net8.0/${justCefVersion}/linux-x64"
     mkdir -p "$justcef_cache/extracted"
     cp ${justCefNative} "$justcef_cache/JustCefNative-linux-x64.zip"
     unzip -q "$justcef_cache/JustCefNative-linux-x64.zip" -d "$justcef_cache/extracted"
@@ -163,8 +165,8 @@ buildDotnetModule (finalAttrs: {
         mv "$tmpdir" "$justcef_cache/extracted"
       fi
     fi
-    printf "1" > "$justcef_cache/extracted/.justcef.version"
-    printf "https://static.grayjay.app/justcef/1/JustCefNative-linux-x64.zip" > "$justcef_cache/extracted/.justcef.url"
+    printf "${justCefVersion}" > "$justcef_cache/extracted/.justcef.version"
+    printf "${justCefUrl}" > "$justcef_cache/extracted/.justcef.url"
   '';
 
   postInstall = ''
