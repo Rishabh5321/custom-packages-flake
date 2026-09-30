@@ -3,12 +3,12 @@
 
 let
   pname = "brave-origin";
-  version = "1.96.59";
+  version = "1.96.60";
 
   allArchives = {
     x86_64-linux = {
       url = "https://github.com/brave/brave-browser/releases/download/v${version}/brave-origin_${version}_amd64.deb";
-      hash = "sha256-RHvFrEsqK/pxJgzfnVLS+raU9Z4VpLmpB5gPWz7EVhM=";
+      hash = "sha256-y3LGzovJcrxOQt6zKfQiRU6FvJOptRB15X2pqdulslk=";
     };
   };
 
