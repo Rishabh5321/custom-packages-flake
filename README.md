@@ -4,32 +4,34 @@ A Nix flake containing custom packages for NixOS and Linux.
 
 ## Packages
 
+<!-- packages:start -->
+
 | Package | Description |
 |---------|-------------|
 | `ab-download-manager` | A Download Manager that speeds up your downloads |
-| `altersend` | Private, peer-to-peer file transfer application |
+| `altersend` | A free, open-source, cross-platform application designed for private, peer-to-peer file transfers |
 | `antigravity` | Google Antigravity — an internal Chrome/Electron-based development and onboarding tool |
-| `anymex` | Anime Streaming App |
-| `better-control` | Simple control panel for Linux based on GTK |
-| `brave-origin` | Brave browser origin - browser without brave bloat |
-| `fladder` | A Simple Jellyfin Frontend built on top of Flutter |
-| `grayjay` | Desktop client for Grayjay to stream and download video content |
-| `helium` | Helium browser a browser without chrome bloat |
-| `hydralauncher` | Open source game launcher |
+| `anymex` | AnymeX - Your Anime & Manga Hub |
+| `better-control` | Simple control panel for linux based on GTK |
+| `brave-origin` | Privacy-oriented browser for Desktop and Laptop computers |
+| `fladder` | Simple Jellyfin Frontend built on top of Flutter |
+| `grayjay` | Cross-platform application to stream and download content from various sources |
+| `helium` | Helium - A simple and modern way to watch anime |
+| `hydralauncher` | Game launcher with its own embedded bittorrent client |
 | `mangayomi` | Free and open source application for reading manga and watching anime |
 | `nuvio` | Nuvio Desktop client (unofficial builds with Linux fixes) |
-| `opera` | Opera Browser |
-| `seanime` | Open-source media server for anime and manga |
-| `shonenx` | Anime Streaming Desktop App |
-| `skystream` | Just a streaming app |
-| `sorayomi` | A free and open source manga reader for the desktop |
-| `stremio` | Open-source media player |
-| `stremio-enhanced` | Stremio with enhanced features |
-| `surge` | Open-source TUI Downloader |
-| `thorium-avx` | Thorium Browser (AVX optimized) |
-| `thorium-avx2` | Thorium Browser (AVX2 optimized) |
-| `thorium-sse3` | Thorium Browser (SSE3 optimized) |
-| `thorium-sse4` | Thorium Browser (SSE4 optimized) |
+| `opera` | Faster, safer and smarter web browser |
+| `seanime` | Open-source media server with a web interface and desktop app for anime and manga |
+| `sorayomi` | A free and open source manga reader for the desktop. |
+| `stremio` | Client for Stremio on Linux |
+| `stremio-enhanced` | Stremio Enhanced - Stremio with enhanced features |
+| `thorium-avx` | Thorium Browser (AVX) - A fast and secure web browser |
+| `thorium-avx2` | Thorium Browser (AVX2) - A fast and secure web browser |
+| `thorium-sse3` | Thorium Browser (SSE3) - A fast and secure web browser |
+| `thorium-sse4` | Thorium Browser (SSE4) - A fast and secure web browser |
+| `zcode` | Official Harness for GLM-5.3 - AI coding agent desktop application |
+
+<!-- packages:end -->
 
 ## Usage
 
@@ -80,3 +82,16 @@ This repository features a fully automated update system. A GitHub Actions workf
 - **Workflow**: `.github/workflows/update-packages.yml`
 - **Mechanism**: The workflow executes custom `update.sh` scripts located in each package directory (e.g., `packages/thorium/update.sh`).
 - **Pull Requests**: When an update is detected, a Pull Request is automatically created and merged.
+
+### Package table
+
+The table under [Packages](#packages) is generated, do not edit it by hand. It is rebuilt
+from the packages exposed by the flake using each derivation's `meta.description`.
+
+```bash
+./scripts/generate-readme-table.sh          # regenerate the table
+./scripts/generate-readme-table.sh --check   # fail if the table is stale
+```
+
+The `.github/workflows/flake_format.yml` workflow runs the generator on every push to `main`
+and opens a PR with the result.

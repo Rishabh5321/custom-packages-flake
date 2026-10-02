@@ -29,4 +29,8 @@ appimageTools.wrapType2 {
         $out/share/icons/hicolor/512x512/apps/mangayomi.png
     fi
   '';
+
+  meta = {
+    description = "Free and open source application for reading manga and watching anime";
+  };
 }
