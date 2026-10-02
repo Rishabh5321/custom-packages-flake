@@ -19,8 +19,6 @@ A Nix flake containing custom packages for NixOS and Linux.
 | `mangayomi` | Free and open source application for reading manga and watching anime |
 | `nuvio` | Nuvio Desktop client (unofficial builds with Linux fixes) |
 | `opera` | Opera Browser |
-| `playtorrio` | Stream torrents directly (Archived) |
-| `playtorrio-v2` | Stream torrents directly |
 | `seanime` | Open-source media server for anime and manga |
 | `shonenx` | Anime Streaming Desktop App |
 | `skystream` | Just a streaming app |

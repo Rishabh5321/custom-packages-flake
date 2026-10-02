@@ -8,8 +8,6 @@ rec {
   altersend = pkgs.callPackage ./altersend/default.nix { };
   brave-origin = pkgs.callPackage ./brave-origin/default.nix { };
   anymex = pkgs.callPackage ./anymex/default.nix { };
-  playtorrio = pkgs.callPackage ./playtorrio/default.nix { };
-  playtorrio-v2 = pkgs.callPackage ./playtorrio-v2/default.nix { };
   mangayomi = pkgs.callPackage ./mangayomi/default.nix { };
   nuvio = pkgs.callPackage ./nuvio/default.nix { };
   sorayomi = pkgs.callPackage ./sorayomi/default.nix { };
