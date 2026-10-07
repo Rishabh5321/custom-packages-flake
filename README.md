@@ -13,6 +13,7 @@ A Nix flake containing custom packages for NixOS and Linux.
 | `antigravity` | Google Antigravity — an internal Chrome/Electron-based development and onboarding tool |
 | `anymex` | AnymeX - Your Anime & Manga Hub |
 | `better-control` | Simple control panel for linux based on GTK |
+| `bitchord` | Aesthetic YouTube Music client (desktop beta) |
 | `brave-origin` | Privacy-oriented browser for Desktop and Laptop computers |
 | `cage-xtmapper` | Wayland kiosk compositor (cage) patched to run XtMapper on Waydroid |
 | `fladder` | Simple Jellyfin Frontend built on top of Flutter |
