@@ -15,7 +15,6 @@ A Nix flake containing custom packages for NixOS and Linux.
 | `better-control` | Simple control panel for linux based on GTK |
 | `brave-origin` | Privacy-oriented browser for Desktop and Laptop computers |
 | `fladder` | Simple Jellyfin Frontend built on top of Flutter |
-| `grayjay` | Cross-platform application to stream and download content from various sources |
 | `helium` | Helium - A simple and modern way to watch anime |
 | `hydralauncher` | Game launcher with its own embedded bittorrent client |
 | `mangayomi` | Free and open source application for reading manga and watching anime |
