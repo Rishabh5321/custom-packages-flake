@@ -90,7 +90,7 @@ stdenv.mkDerivation rec {
     hwdata
     libdisplay-info
     libliftoff
-    lcms2              # <--- Added lcms2 here
+    lcms2 # <--- Added lcms2 here
   ];
 
   NIX_CFLAGS_COMPILE = [ "-Wno-error" ];
