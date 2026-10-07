@@ -10,7 +10,6 @@
 , wayland-scanner
 , wayland-protocols
 , libxcb
-, libxcb-render-util
 , libxkbcommon
 , libdrm
 , pixman
@@ -18,6 +17,22 @@
 , seatd
 , waydroid
 , runtimeShell
+, libGL
+, mesa
+, libgbm
+, libx11
+, libxcb-wm
+, libxcb-render-util
+, libxcb-errors
+, vulkan-loader
+, vulkan-headers
+, glslang
+, hwdata
+, libdisplay-info
+, libliftoff
+, libinput
+, lcms2              # <--- Added lcms2 here
+, systemd
 , nix-update-script
 }:
 
@@ -26,11 +41,9 @@ stdenv.mkDerivation rec {
   version = cageVersion;
   tag = "v20260208";
 
-  # Versions of the tarballs that upstream vendors inside its repository.
   cageVersion = "0.2.0";
   wlrootsVersion = "0.18.1";
 
-  # Set by stdenv from unpackPhase below; listed here so the phases read clearly.
   sourceRoot = "cage-source/cage-${cageVersion}";
 
   src = fetchFromGitHub {
@@ -47,30 +60,41 @@ stdenv.mkDerivation rec {
     patch
     makeWrapper
     wayland-scanner
+    glslang
   ];
 
-  # The vendored wlroots is configured by the patches for the X11 backend only,
-  # so these are the libraries that end up in the resulting binary.
   buildInputs = [
     wayland
     wayland-protocols
     libxcb
-    libxcb-render-util
     libxkbcommon
     libdrm
     pixman
     udev
     seatd
+    libinput
+    systemd
+
+    # X11 / XWayland backend dependencies
+    libx11
+    libxcb-wm
+    libxcb-render-util
+    libxcb-errors
+
+    # Renderers and display logic
+    libGL
+    mesa
+    libgbm
+    vulkan-loader
+    vulkan-headers
+    hwdata
+    libdisplay-info
+    libliftoff
+    lcms2              # <--- Added lcms2 here
   ];
 
-  # wlroots 0.18 builds with -Werror, which trips over enum values added to
-  # newer libinput than wlroots 0.18 was written against.
   NIX_CFLAGS_COMPILE = [ "-Wno-error" ];
 
-  # Reproduces upstream ./build.sh: cage and the patched wlroots are unpacked
-  # from the tarballs vendored in the repository and built statically, so the
-  # binary keeps the XtMapper specific wlroots patches (pointer confinement,
-  # title bar toggle, forced output mode).
   unpackPhase = ''
     runHook preUnpack
 
@@ -94,45 +118,21 @@ stdenv.mkDerivation rec {
     runHook postUnpack
   '';
 
-  mesonBuildDir = "build";
+  mesonFlags = [
+    "--buildtype=release"
+    "-Ddefault_library=static"
+    "-Dwlroots:renderers=gles2,vulkan"
+  ];
 
-  configurePhase = ''
-    runHook preConfigure
-
-    meson setup "$mesonBuildDir" \
-      --prefix="$out" \
-      --buildtype=release \
-      -Ddefault_library=static
-
-    runHook postConfigure
-  '';
-
-  buildPhase = ''
-    runHook preBuild
-
-    meson compile -C "$mesonBuildDir"
-
-    runHook postBuild
-  '';
-
-  installPhase = ''
-    runHook preInstall
-
-    meson install -C "$mesonBuildDir"
-
+  postInstall = ''
     install -Dm755 "$src/cage_xtmapper.sh" "$out/bin/cage_xtmapper.sh"
     substituteInPlace "$out/bin/cage_xtmapper.sh" \
       --replace-fail /bin/bash "${runtimeShell}"
 
-    # wlroots headers and the static archive are not needed at runtime
     rm -rf $out/lib $out/include
 
-    # The launcher script shells out to `waydroid` and to the `cage_xtmapper`
-    # binary that sits next to it in this output.
     wrapProgram $out/bin/cage_xtmapper.sh \
       --prefix PATH : "${lib.makeBinPath [ waydroid ]}:$out/bin"
-
-    runHook postInstall
   '';
 
   passthru.updateScript = nix-update-script { };
