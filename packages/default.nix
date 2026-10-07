@@ -11,7 +11,6 @@ rec {
   mangayomi = pkgs.callPackage ./mangayomi/default.nix { };
   nuvio = pkgs.callPackage ./nuvio/default.nix { };
   sorayomi = pkgs.callPackage ./sorayomi/default.nix { };
-  grayjay = pkgs.callPackage ./grayjay/default.nix { };
   seanime = pkgs.callPackage ./seanime/seanime-pkg.nix { };
   stremio = pkgs.callPackage ./stremio/default.nix { };
   stremio-enhanced = pkgs.callPackage ./stremio-enhanced/default.nix { };
