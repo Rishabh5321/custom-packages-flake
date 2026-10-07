@@ -7,6 +7,7 @@ rec {
   antigravity = pkgs.callPackage ./antigravity/default.nix { };
   altersend = pkgs.callPackage ./altersend/default.nix { };
   brave-origin = pkgs.callPackage ./brave-origin/default.nix { };
+  cage-xtmapper = pkgs.callPackage ./cage-xtmapper/default.nix { };
   anymex = pkgs.callPackage ./anymex/default.nix { };
   mangayomi = pkgs.callPackage ./mangayomi/default.nix { };
   nuvio = pkgs.callPackage ./nuvio/default.nix { };

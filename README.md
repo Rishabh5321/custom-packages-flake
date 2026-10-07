@@ -14,6 +14,7 @@ A Nix flake containing custom packages for NixOS and Linux.
 | `anymex` | AnymeX - Your Anime & Manga Hub |
 | `better-control` | Simple control panel for linux based on GTK |
 | `brave-origin` | Privacy-oriented browser for Desktop and Laptop computers |
+| `cage-xtmapper` | Wayland kiosk compositor (cage) patched to run XtMapper on Waydroid |
 | `fladder` | Simple Jellyfin Frontend built on top of Flutter |
 | `helium` | Helium - A simple and modern way to watch anime |
 | `hydralauncher` | Game launcher with its own embedded bittorrent client |
