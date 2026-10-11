@@ -19,14 +19,14 @@
 
 python3Packages.buildPythonApplication rec {
   pname = "better-control";
-  version = "5823f207170f30db153bfb1d6f280b6eaf9d6eab";
+  version = "e544da87263aa652f92dc8ba27cc5173428c0aad";
   pyproject = false;
 
   src = fetchFromGitHub {
     owner = "better-ecosystem";
     repo = "better-control";
     rev = "${version}";
-    hash = "sha256-arOrOTRQipuW8C1iPZCLdCYNtJlYZikgj0O4C5j7+fU=";
+    hash = "sha256-vsNZmDSZCp6/1bcYf8ZIvTSmc5R7DEgWvHMXcZ6geRE=";
   };
 
   build-system = with python3Packages; [
