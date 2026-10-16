@@ -15,11 +15,35 @@ fi
 
 # Check latest version
 echo "Checking latest version"
-latest_url=$(
-  curl -sL --compressed https://antigravity.google/download \
-  | grep -oE "https://storage.googleapis.com[^\"]+linux-x64[^\"]+" | head -n1
+
+# The download page inlines JS template literals that mention
+# storage.googleapis.com, so scraping it blindly matches the JS blob instead of
+# a real artifact URL. Prefer the hub releases API that page itself calls and
+# only fall back to scraping, matching a fully resolved artifact URL.
+releases_api="https://antigravity-hub-auto-updater-974169037036.us-central1.run.app/releases"
+rev_pattern='^[0-9]+\.[0-9]+\.[0-9]+-[0-9]+$'
+latest_rev=$(
+  curl -sfL --compressed "$releases_api" \
+    | jq -r '.[0] | "\(.version)-\(.execution_id)"' 2>/dev/null \
+    || true
 )
-latest_rev=$(echo "$latest_url" | grep -oE "[0-9]+\.[0-9]+\.[0-9]+-[0-9]+")
+
+if ! [[ "$latest_rev" =~ $rev_pattern ]]; then
+  echo "Releases API unusable, falling back to download page scrape"
+  latest_rev=$(
+    curl -sfL --compressed https://antigravity.google/download \
+      | grep -oE 'https://storage\.googleapis\.com/antigravity-public/antigravity-hub/[0-9]+\.[0-9]+\.[0-9]+-[0-9]+/linux-x64/Antigravity\.tar\.gz' \
+      | head -n1 \
+      | grep -oE '[0-9]+\.[0-9]+\.[0-9]+-[0-9]+' \
+      || true
+  )
+fi
+
+if ! [[ "$latest_rev" =~ $rev_pattern ]]; then
+  echo "❌ Failed to determine the latest version (got: '${latest_rev:-}')"
+  exit 1
+fi
+
 echo "Latest commit: $latest_rev"
 
 current_rev=$(grep -oP 'version\s*=\s*"\K[^"]+' "$package_file" | head -n1)
