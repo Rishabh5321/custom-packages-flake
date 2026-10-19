@@ -15,6 +15,7 @@ rec {
   seanime = pkgs.callPackage ./seanime/seanime-pkg.nix { };
   stremio = pkgs.callPackage ./stremio/default.nix { };
   stremio-enhanced = pkgs.callPackage ./stremio-enhanced/default.nix { };
+  teledrive = pkgs.callPackage ./teledrive/default.nix { };
   helium = pkgs.callPackage ./helium/default.nix { };
   hydralauncher = pkgs.callPackage ./hydralauncher/default.nix { };
   opera = pkgs.callPackage ./opera/default.nix { };

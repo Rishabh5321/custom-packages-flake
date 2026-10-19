@@ -26,6 +26,7 @@ A Nix flake containing custom packages for NixOS and Linux.
 | `sorayomi` | A free and open source manga reader for the desktop. |
 | `stremio` | Client for Stremio on Linux |
 | `stremio-enhanced` | Stremio Enhanced - Stremio with enhanced features |
+| `teledrive` | Turn a private Telegram channel into your personal cloud drive |
 | `thorium-avx` | Thorium Browser (AVX) - A fast and secure web browser |
 | `thorium-avx2` | Thorium Browser (AVX2) - A fast and secure web browser |
 | `thorium-sse3` | Thorium Browser (SSE3) - A fast and secure web browser |
