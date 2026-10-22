@@ -68,12 +68,9 @@ python3Packages.buildPythonApplication rec {
 
   makeFlags = [ "PREFIX=${placeholder "out"}" ];
 
-  dontWrapGApps = true;
-
-  makeWrapperArgs = [
-    "\${gappsWrapperArgs[@]}"
-    "--prefix PATH : ${lib.makeBinPath runtimeDeps}"
-  ];
+  preFixup = ''
+    gappsWrapperArgs+=(--prefix PATH : ${lib.makeBinPath runtimeDeps})
+  '';
 
   postInstall = ''
     rm $out/bin/betterctl
