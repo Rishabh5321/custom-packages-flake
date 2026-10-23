@@ -5,12 +5,12 @@
 
 let
   pname = "bitchord";
-  version = "1.8";
+  version = "1.8.1";
 
   src = fetchurl {
     name = "BitChord-${version}-linux-x86_64.AppImage";
     url = "https://github.com/kushagrasinghx/BitChord/releases/download/v${version}/BitChord-${version}-linux-x86_64.AppImage";
-    hash = "sha256-WSZiB8ar3ba0u76FcM1pwTd/So9eWMJLloJPZY9GUbg=";
+    hash = "sha256-ABnfxLMtY8E5KqJkrtIlPB4ML7CSFvjizCabv7i7SbU=";
   };
 
   appimageContents = appimageTools.extract { inherit pname version src; };
