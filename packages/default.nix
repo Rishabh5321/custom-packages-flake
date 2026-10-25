@@ -21,5 +21,6 @@ rec {
   opera = pkgs.callPackage ./opera/default.nix { };
   zcode = pkgs.callPackage ./zcode/default.nix { };
   bitchord = pkgs.callPackage ./bitchord/default.nix { };
+  opencode = pkgs.callPackage ./opencode/default.nix { };
 
 } // (import ./thorium/default.nix { inherit pkgs; })

@@ -21,6 +21,7 @@ A Nix flake containing custom packages for NixOS and Linux.
 | `hydralauncher` | Game launcher with its own embedded bittorrent client |
 | `mangayomi` | Free and open source application for reading manga and watching anime |
 | `nuvio` | Nuvio Desktop client (unofficial builds with Linux fixes) |
+| `opencode` | The open source coding agent |
 | `opera` | Faster, safer and smarter web browser |
 | `seanime` | Open-source media server with a web interface and desktop app for anime and manga |
 | `sorayomi` | A free and open source manga reader for the desktop. |
