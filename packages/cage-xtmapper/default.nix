@@ -4,7 +4,6 @@
 , meson
 , ninja
 , pkg-config
-, patch
 , makeWrapper
 , wayland
 , wayland-scanner
@@ -16,7 +15,6 @@
 , udev
 , seatd
 , waydroid
-, runtimeShell
 , libGL
 , mesa
 , libgbm
@@ -31,33 +29,37 @@
 , libdisplay-info
 , libliftoff
 , libinput
-, lcms2              # <--- Added lcms2 here
+, lcms2
 , systemd
-, nix-update-script
 }:
 
 stdenv.mkDerivation rec {
   pname = "cage-xtmapper";
   version = cageVersion;
-  tag = "v20260208";
+  tag = "v20261019";
 
-  cageVersion = "0.2.0";
-  wlrootsVersion = "0.18.1";
-
-  sourceRoot = "cage-source/cage-${cageVersion}";
+  cageVersion = "0.3.0";
+  wlrootsVersion = "0.20.2";
 
   src = fetchFromGitHub {
     owner = "Xtr126";
     repo = "cage-xtmapper";
     rev = tag;
-    hash = "sha256-TUQJYjKsYHld8h7+/uI6iiwGYbs8oEc93ZE8mAczX7A=";
+    hash = "sha256-EGEV6DAxt32qCRY87FwJXy8skbHIxAqlh+ZtgX9x2/0=";
+    fetchSubmodules = true;
   };
+
+  sourceRoot = "source/forks/cage";
+
+  postUnpack = ''
+    mkdir -p "$sourceRoot/subprojects"
+    cp -r source/forks/wlroots-xtmapper "$sourceRoot/subprojects/wlroots"
+  '';
 
   nativeBuildInputs = [
     meson
     ninja
     pkg-config
-    patch
     makeWrapper
     wayland-scanner
     glslang
@@ -90,33 +92,10 @@ stdenv.mkDerivation rec {
     hwdata
     libdisplay-info
     libliftoff
-    lcms2 # <--- Added lcms2 here
+    lcms2
   ];
 
   NIX_CFLAGS_COMPILE = [ "-Wno-error" ];
-
-  unpackPhase = ''
-    runHook preUnpack
-
-    mkdir -p cage-source
-    tar -C cage-source -xf "$src/cage-$cageVersion.tar.gz"
-
-    for p in "$src"/*.patch; do
-      patch -d "$sourceRoot" -p1 -i "$p"
-    done
-
-    mkdir -p "$sourceRoot/subprojects"
-    tar -C "$sourceRoot/subprojects" -xf "$src/wlroots-$wlrootsVersion.tar.gz"
-    rm -rf "$sourceRoot/subprojects/wlroots"
-    mv "$sourceRoot/subprojects/wlroots-$wlrootsVersion" \
-      "$sourceRoot/subprojects/wlroots"
-
-    for p in "$src"/wlroots_patches/*.patch; do
-      patch -d "$sourceRoot/subprojects/wlroots" -p1 -i "$p"
-    done
-
-    runHook postUnpack
-  '';
 
   mesonFlags = [
     "--buildtype=release"
@@ -126,16 +105,14 @@ stdenv.mkDerivation rec {
 
   postInstall = ''
     install -Dm755 "$src/cage_xtmapper.sh" "$out/bin/cage_xtmapper.sh"
-    substituteInPlace "$out/bin/cage_xtmapper.sh" \
-      --replace-fail /bin/bash "${runtimeShell}"
 
-    rm -rf $out/lib $out/include
+    rm -rf "$out/lib" "$out/include"
 
-    wrapProgram $out/bin/cage_xtmapper.sh \
+    wrapProgram "$out/bin/cage_xtmapper.sh" \
       --prefix PATH : "${lib.makeBinPath [ waydroid ]}:$out/bin"
   '';
 
-  passthru.updateScript = nix-update-script { };
+  passthru.updateScript = ./update.sh;
 
   meta = {
     description = "Wayland kiosk compositor (cage) patched to run XtMapper on Waydroid";
