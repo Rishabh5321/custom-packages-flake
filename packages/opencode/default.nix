@@ -7,16 +7,16 @@
 
 let
   pname = "opencode";
-  version = "2.1.4";
+  version = "2.2.0";
 
   sources = {
     x86_64-linux = {
       url = "https://registry.npmjs.org/@opencode/cli-linux-x64/-/cli-linux-x64-${version}.tgz";
-      hash = "sha256-zgWr4tzhBBORyOyM242gZvZA/UcecqyEbcsInEQeEeE=";
+      hash = "sha256-/jBGuGhy5iT2ImgFj0gBofHv/8GTEDqZiCOMiRuMoCg=";
     };
     aarch64-linux = {
       url = "https://registry.npmjs.org/@opencode/cli-linux-arm64/-/cli-linux-arm64-${version}.tgz";
-      hash = "sha256-6ay04jqaxDITlpOqFmRVpq3YlGUzOUy+CDRZpI54iGE=";
+      hash = "sha256-akBkPA3KOv+dN8h8JsDuADxGq7gQ4cbd3glP+/dGC4s=";
     };
   };
 
@@ -55,10 +55,7 @@ stdenv.mkDerivation {
   postFixup = lib.optionalString (stdenv.buildPlatform.canExecute stdenv.hostPlatform) ''
     autoPatchelf "$out"
     export HOME=$(mktemp -d)
-    installShellCompletion --cmd opencode \
-      --bash <($out/bin/opencode --completions bash) \
-      --zsh <($out/bin/opencode --completions zsh) \
-      --fish <($out/bin/opencode --completions fish)
+    installShellCompletion --cmd opencode       --bash <($out/bin/opencode --completions bash)       --zsh <($out/bin/opencode --completions zsh)       --fish <($out/bin/opencode --completions fish)
   '';
 
   passthru.updateScript = ./update.sh;
