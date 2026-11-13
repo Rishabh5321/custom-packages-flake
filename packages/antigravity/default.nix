@@ -38,14 +38,14 @@
 }:
 stdenv.mkDerivation (finalAttrs: {
   pname = "antigravity";
-  version = "2.31.2-6470801290035200";
+  version = "2.32.1-6001966350991360";
 
   src = fetchurl {
     url =
       if lib.versionAtLeast finalAttrs.version "2.3.0"
       then "https://storage.googleapis.com/antigravity-public/antigravity-hub/${finalAttrs.version}/linux-x64/Antigravity.tar.gz"
       else "https://edgedl.me.gvt1.com/edgedl/release2/j0qc3/antigravity/stable/${finalAttrs.version}/linux-x64/${if lib.versionAtLeast finalAttrs.version "2.0.0" then "Antigravity%20IDE.tar.gz" else "Antigravity.tar.gz"}";
-    hash = "sha256-IL48qyGirrqdyj7umiEvAwjPNLIvtKipiw3t8Y7mNBM=";
+    hash = "sha256-TLLU/qdKdPF8/iUYQbkAJJxa0nKLlh79v3Kdr65/6EI=";
   };
 
   nativeBuildInputs = [
