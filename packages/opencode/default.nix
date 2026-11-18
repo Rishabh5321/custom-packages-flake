@@ -7,16 +7,16 @@
 
 let
   pname = "opencode";
-  version = "2.3.0";
+  version = "2.3.1";
 
   sources = {
     x86_64-linux = {
       url = "https://registry.npmjs.org/@opencode/cli-linux-x64/-/cli-linux-x64-${version}.tgz";
-      hash = "sha256-QI+FS1+seFejtN9OeD06i3D1zIx8MYeqwJxb4FdsFK4=";
+      hash = "sha256-Ag5L2t9ili+Ab3U5NlftJtRi3r7I407n07bgyztFx4M=";
     };
     aarch64-linux = {
       url = "https://registry.npmjs.org/@opencode/cli-linux-arm64/-/cli-linux-arm64-${version}.tgz";
-      hash = "sha256-vjAGY1O7WSxDkZsxBy/0CZ4GljbDGhaAawiHN+AofOo=";
+      hash = "sha256-l8En4PF6/UoBEEkK7lco6QR7uiAbsTKy67zHJIMaCus=";
     };
   };
 
