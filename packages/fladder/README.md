@@ -1,6 +1,6 @@
 # Fladder Flake
 
-This repository provides a Nix flake for [Fladder](https://github.com/DonutWare/Fladder), a simple Jellyfin frontend built with Flutter. It builds the application from source using Nix's Flutter build infrastructure.
+This repository provides a Nix flake for [Fladder](https://github.com/DonutWare/Fladder), a simple Jellyfin frontend built with Flutter. It packages the official Linux AppImage in a sandboxed FHS environment, together with the system libraries it expects (libmpv, libepoxy and liblz4).
 
 ## Usage
 
