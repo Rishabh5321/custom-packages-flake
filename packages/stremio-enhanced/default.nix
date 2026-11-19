@@ -7,7 +7,7 @@
 
 let
   pname = "stremio-enhanced";
-  version = "1.2.0";
+  version = "1.2.1";
   src = fetchurl {
     url = "https://github.com/REVENGE977/stremio-enhanced/releases/download/v${version}/Stremio.Enhanced-${version}.AppImage";
     hash = "sha256-a+knxg/rd5Ied4RVK8Gg7xeFElovJab0gqxpjs11fAU=";
