@@ -6,7 +6,7 @@ set -e
 # 1. Fetch current versions/URLs from default.nix
 FILE="packages/stremio-enhanced/default.nix"
 CURRENT_VERSION=$(grep -oP 'version\s*=\s*"\K[^"]+' "$FILE" || echo "0.0.0")
-CURRENT_SERVER_URL=$(sed -n '/serverJs = fetchurl [{]/,/[}]/p' "$FILE" | grep -oP 'url\s*=\s*"\K[^"]+' || true)
+CURRENT_SERVER_URL=$(sed -n '/serverJs = fetchurl [{]/,/^[[:space:]]*};/p' "$FILE" | grep -oP 'url\s*=\s*"\K[^"]+' || true)
 
 echo "Current Stremio-Enhanced version: $CURRENT_VERSION"
 echo "Current server.js URL:           $CURRENT_SERVER_URL"
@@ -79,11 +79,11 @@ if [ "$CURRENT_VERSION" != "$LATEST_VERSION" ]; then
     rm -f "$TEMP_FILE"
     SRI_HASH=$(nix hash convert --hash-algo sha256 --to sri "$NEW_HASH")
     
-    sed -i -E '/src = fetchurl [{]/,/[}]/ s|(hash\s*=\s*\")[^\"]+(\";)|\1'"${SRI_HASH}"'\2|' "$FILE"
+    sed -i -E '/src = fetchurl [{]/,/^[[:space:]]*};/ s|(hash\s*=\s*\")[^\"]+(\";)|\1'"${SRI_HASH}"'\2|' "$FILE"
 fi
 
 if [ "$CURRENT_SERVER_URL" != "$LATEST_SERVER_URL" ]; then
-    sed -i -E '/serverJs = fetchurl [{]/,/[}]/ s|(url\s*=\s*\")[^\"]+(\";)|\1'"${LATEST_SERVER_URL}"'\2|' "$FILE"
+    sed -i -E '/serverJs = fetchurl [{]/,/^[[:space:]]*};/ s|(url\s*=\s*\")[^\"]+(\";)|\1'"${LATEST_SERVER_URL}"'\2|' "$FILE"
     
     echo "Downloading server.js to calculate hash: $LATEST_SERVER_URL"
     TEMP_FILE=$(mktemp)
@@ -92,7 +92,7 @@ if [ "$CURRENT_SERVER_URL" != "$LATEST_SERVER_URL" ]; then
     rm -f "$TEMP_FILE"
     SRI_HASH=$(nix hash convert --hash-algo sha256 --to sri "$NEW_HASH")
     
-    sed -i -E '/serverJs = fetchurl [{]/,/[}]/ s|(hash\s*=\s*\")[^\"]+(\";)|\1'"${SRI_HASH}"'\2|' "$FILE"
+    sed -i -E '/serverJs = fetchurl [{]/,/^[[:space:]]*};/ s|(hash\s*=\s*\")[^\"]+(\";)|\1'"${SRI_HASH}"'\2|' "$FILE"
 fi
 
 
