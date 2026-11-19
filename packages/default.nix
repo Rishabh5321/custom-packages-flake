@@ -9,8 +9,6 @@ rec {
   brave-origin = pkgs.callPackage ./brave-origin/default.nix { };
   cage-xtmapper = pkgs.callPackage ./cage-xtmapper/default.nix { };
   anymex = pkgs.callPackage ./anymex/default.nix { };
-  mangayomi = pkgs.callPackage ./mangayomi/default.nix { };
-  nuvio = pkgs.callPackage ./nuvio/default.nix { };
   sorayomi = pkgs.callPackage ./sorayomi/default.nix { };
   seanime = pkgs.callPackage ./seanime/seanime-pkg.nix { };
   stremio = pkgs.callPackage ./stremio/default.nix { };
