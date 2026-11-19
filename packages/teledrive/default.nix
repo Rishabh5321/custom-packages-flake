@@ -5,11 +5,11 @@
 
 let
   pname = "teledrive";
-  version = "1.5.0";
+  version = "1.6.0";
 
   src = fetchurl {
     url = "https://github.com/Mahmud0808/TeleDrive/releases/download/v${version}/TeleDrive-${version}-x86_64.AppImage";
-    hash = "sha256-AjqCuJHxDQMLCQX5BLkI+EuoGRpBc0tDWqVGOtiuLFA=";
+    hash = "sha256-vEVzv3WpWDPx0uepIYWYaUQeQ0TIAYiMQTUZ8Jx2PP8=";
   };
 
   appimageContents = appimageTools.extract {
