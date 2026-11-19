@@ -19,8 +19,6 @@ A Nix flake containing custom packages for NixOS and Linux.
 | `fladder` | Simple Jellyfin Frontend built on top of Flutter |
 | `helium` | Helium - A simple and modern way to watch anime |
 | `hydralauncher` | Game launcher with its own embedded bittorrent client |
-| `mangayomi` | Free and open source application for reading manga and watching anime |
-| `nuvio` | Nuvio Desktop client (unofficial builds with Linux fixes) |
 | `opencode` | The open source coding agent |
 | `opera` | Faster, safer and smarter web browser |
 | `seanime` | Open-source media server with a web interface and desktop app for anime and manga |
