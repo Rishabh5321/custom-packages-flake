@@ -5,12 +5,12 @@
 
 let
   pname = "zcode";
-  version = "3.19.1";
+  version = "4.0.0";
 
   src = fetchurl {
     name = "${pname}-${version}.AppImage";
     url = "https://cdn-zcode.z.ai/zcode/electron/releases/${version}/linux-x64/ZCode-${version}-linux-x64.AppImage";
-    hash = "sha256-KtljW7LK/WOA3ZSlTCeZ3mN652I6u1+atqaHMgi62TY=";
+    hash = "sha256-LO3F/O7h/8x0sAzKKSv6hlIs9yAbqLyT0MVQC2/vzEc=";
   };
 
   appimageContents = appimageTools.extract { inherit pname version src; };
