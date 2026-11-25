@@ -14,7 +14,7 @@ let
   };
   appimageContents = appimageTools.extract { inherit pname version src; };
   serverJs = fetchurl {
-    url = "https://raw.githubusercontent.com/Stremio/stremio-linux-shell/1021ef7ba75d740f941ff3a1c4c5a5bc5671ac64/data/server.js";
+    url = "https://dl.strem.io/server/v4.22.6/desktop/server.js";
     hash = "sha256-qfj/0cT9TL4dkS9zcNuePdFgXgXqMdr/NH+bpZFF9cg=";
   };
 in
